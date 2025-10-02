@@ -3,17 +3,17 @@ import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 
 // Fix pour les icônes Leaflet avec Vite
-import icon from "leaflet/dist/images/marker-icon.png";
-import iconShadow from "leaflet/dist/images/marker-shadow.png";
+import markerIcon from "leaflet/dist/images/marker-icon.png";
+import markerShadow from "leaflet/dist/images/marker-shadow.png";
 
-const DefaultIcon = L.icon({
-  iconUrl: icon,
-  shadowUrl: iconShadow,
+// Configure l'icône par défaut
+delete (L.Icon.Default.prototype as any)._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconUrl: markerIcon,
+  shadowUrl: markerShadow,
   iconSize: [25, 41],
   iconAnchor: [12, 41],
 });
-
-L.Marker.prototype.options.icon = DefaultIcon;
 
 // Données d'exemple pour la démonstration
 const sampleCampements = [

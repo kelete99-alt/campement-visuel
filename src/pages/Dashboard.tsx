@@ -77,9 +77,7 @@ const Dashboard = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="h-[500px] w-full rounded-lg overflow-hidden border border-border shadow-sm bg-muted flex items-center justify-center">
-                  <p className="text-muted-foreground">Carte en cours de chargement...</p>
-                </div>
+                <CampementMap />
               </CardContent>
             </Card>
           </div>
