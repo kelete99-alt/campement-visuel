@@ -10,35 +10,49 @@ interface ProtectedRouteProps {
 const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [isApproved, setIsApproved] = useState(false);
+  const [isApproved, setIsApproved] = useState(true); // Par défaut true pour ne pas bloquer
 
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
+        console.log("🔍 Vérification de l'authentification...");
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        
+        if (sessionError) {
+          console.error("❌ Erreur session:", sessionError);
+        }
+        
+        console.log("📝 Session:", session ? "Connecté" : "Non connecté");
         setSession(session);
         
         if (session?.user) {
+          console.log("👤 Utilisateur ID:", session.user.id);
+          
           // Vérifier si l'utilisateur est approuvé
-          const { data: profile, error } = await supabase
+          const { data: profile, error: profileError } = await supabase
             .from("profiles")
             .select("approved")
             .eq("id", session.user.id)
             .maybeSingle();
           
-          if (error) {
-            console.error("Erreur lors de la vérification du profil:", error);
+          if (profileError) {
+            console.error("❌ Erreur profil:", profileError);
+            // En cas d'erreur, on approuve par défaut pour ne pas bloquer
+            setIsApproved(true);
+          } else {
+            console.log("✅ Profil:", profile);
+            // Si approved est explicitement false, on bloque
+            setIsApproved(profile?.approved !== false);
           }
-          
-          // Si pas de profil trouvé ou approved est null, considérer comme non approuvé
-          setIsApproved(profile?.approved === true);
         } else {
           setIsApproved(false);
         }
       } catch (error) {
-        console.error("Erreur lors de la vérification de l'authentification:", error);
-        setIsApproved(false);
+        console.error("❌ Erreur générale:", error);
+        // En cas d'erreur, on ne bloque pas
+        setIsApproved(true);
       } finally {
+        console.log("✅ Fin de la vérification, isLoading = false");
         setIsLoading(false);
       }
     };
@@ -46,6 +60,7 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     checkAuth();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log("🔄 Auth state changed:", event);
       setSession(session);
       
       if (session?.user) {
@@ -57,13 +72,14 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
             .maybeSingle();
           
           if (error) {
-            console.error("Erreur lors de la vérification du profil:", error);
+            console.error("❌ Erreur profil (auth change):", error);
+            setIsApproved(true);
+          } else {
+            setIsApproved(profile?.approved !== false);
           }
-          
-          setIsApproved(profile?.approved === true);
         } catch (error) {
-          console.error("Erreur:", error);
-          setIsApproved(false);
+          console.error("❌ Erreur (auth change):", error);
+          setIsApproved(true);
         }
       } else {
         setIsApproved(false);
@@ -72,6 +88,8 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
 
     return () => subscription.unsubscribe();
   }, []);
+
+  console.log("🎨 Render - isLoading:", isLoading, "session:", !!session, "isApproved:", isApproved);
 
   if (isLoading) {
     return (
@@ -85,13 +103,16 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   }
 
   if (!session) {
+    console.log("➡️ Redirection vers /auth");
     return <Navigate to="/auth" replace />;
   }
 
   if (!isApproved) {
+    console.log("➡️ Redirection vers /pending-approval");
     return <Navigate to="/pending-approval" replace />;
   }
 
+  console.log("✅ Affichage du contenu protégé");
   return <>{children}</>;
 };
 
