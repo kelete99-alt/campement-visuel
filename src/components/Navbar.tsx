@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { MapPin, FileText, Home } from "lucide-react";
+import { FileText, Home, Activity } from "lucide-react";
 import logoDgat from "@/assets/logo-dgat.png";
 import armoiries from "@/assets/armoiries-ci.png";
 
@@ -50,6 +50,17 @@ const Navbar = () => {
             >
               <FileText size={18} />
               <span className="hidden sm:inline">Nouvelle fiche</span>
+            </Link>
+            <Link
+              to="/activites"
+              className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
+                isActive("/activites")
+                  ? "bg-primary text-primary-foreground"
+                  : "text-foreground hover:bg-muted"
+              }`}
+            >
+              <Activity size={18} />
+              <span className="hidden sm:inline">Activités</span>
             </Link>
           </div>
         </div>

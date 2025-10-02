@@ -2,6 +2,7 @@ import { MapPin, Users, Globe2, Building2 } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import StatsCard from "@/components/StatsCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 
 const Dashboard = () => {
   // Données d'exemple - à remplacer par des données réelles du backend
@@ -40,7 +41,19 @@ const Dashboard = () => {
     { id: 1, action: "Nouveau campement ajouté", location: "Aboisso", time: "Il y a 2 heures" },
     { id: 2, action: "Mise à jour infrastructure", location: "Bondoukou", time: "Il y a 5 heures" },
     { id: 3, action: "Validation préfectorale", location: "Daloa", time: "Il y a 1 jour" },
-    { id: 4, action: "Nouveau campement ajouté", location: "Korhogo", time: "Il y a 2 jours" },
+  ];
+
+  const departementData = [
+    { departement: "Abidjan", campements: 45 },
+    { departement: "Bouaké", campements: 32 },
+    { departement: "Daloa", campements: 28 },
+    { departement: "Korhogo", campements: 25 },
+    { departement: "San-Pédro", campements: 22 },
+    { departement: "Man", campements: 18 },
+    { departement: "Bondoukou", campements: 15 },
+    { departement: "Abengourou", campements: 14 },
+    { departement: "Divo", campements: 12 },
+    { departement: "Gagnoa", campements: 11 },
   ];
 
   return (
@@ -109,15 +122,28 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Répartition par département - Placeholder */}
+        {/* Répartition par département */}
         <Card>
           <CardHeader>
             <CardTitle>Répartition par département</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="h-[200px] flex items-center justify-center text-muted-foreground">
-              <p>Graphique de répartition (à intégrer avec Chart.js)</p>
-            </div>
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={departementData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis 
+                  dataKey="departement" 
+                  angle={-45}
+                  textAnchor="end"
+                  height={100}
+                  fontSize={12}
+                />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Bar dataKey="campements" fill="hsl(var(--primary))" name="Nombre de campements" />
+              </BarChart>
+            </ResponsiveContainer>
           </CardContent>
         </Card>
       </main>
