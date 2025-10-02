@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
@@ -19,6 +19,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { useCampements } from "@/hooks/useCampements";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const ListeCampements = () => {
   const navigate = useNavigate();
@@ -26,16 +27,64 @@ const ListeCampements = () => {
   const [filteredCampements, setFilteredCampements] = useState(campements);
   const [searchTerm, setSearchTerm] = useState("");
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [selectedRegion, setSelectedRegion] = useState<string>("all");
+  const [selectedDepartement, setSelectedDepartement] = useState<string>("all");
+  const [selectedSousPrefecture, setSelectedSousPrefecture] = useState<string>("all");
+
+  // Obtenir les valeurs uniques pour les filtres
+  const regions = useMemo(() => {
+    return Array.from(new Set(campements.map(c => c.region))).sort();
+  }, [campements]);
+
+  const departements = useMemo(() => {
+    const filtered = selectedRegion === "all" 
+      ? campements 
+      : campements.filter(c => c.region === selectedRegion);
+    return Array.from(new Set(filtered.map(c => c.departement))).sort();
+  }, [campements, selectedRegion]);
+
+  const sousPrefectures = useMemo(() => {
+    let filtered = campements;
+    if (selectedRegion !== "all") {
+      filtered = filtered.filter(c => c.region === selectedRegion);
+    }
+    if (selectedDepartement !== "all") {
+      filtered = filtered.filter(c => c.departement === selectedDepartement);
+    }
+    return Array.from(new Set(filtered.map(c => c.sous_prefecture))).sort();
+  }, [campements, selectedRegion, selectedDepartement]);
 
   useEffect(() => {
-    const filtered = campements.filter(
-      (c) =>
-        c.nom_campement.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        c.region.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        c.departement.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    let filtered = campements;
+    
+    // Filtrer par région
+    if (selectedRegion !== "all") {
+      filtered = filtered.filter(c => c.region === selectedRegion);
+    }
+    
+    // Filtrer par département
+    if (selectedDepartement !== "all") {
+      filtered = filtered.filter(c => c.departement === selectedDepartement);
+    }
+    
+    // Filtrer par sous-préfecture
+    if (selectedSousPrefecture !== "all") {
+      filtered = filtered.filter(c => c.sous_prefecture === selectedSousPrefecture);
+    }
+    
+    // Filtrer par terme de recherche
+    if (searchTerm) {
+      filtered = filtered.filter(
+        (c) =>
+          c.nom_campement.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          c.region.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          c.departement.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          c.sous_prefecture.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+    
     setFilteredCampements(filtered);
-  }, [searchTerm, campements]);
+  }, [searchTerm, campements, selectedRegion, selectedDepartement, selectedSousPrefecture]);
 
   const handleDelete = () => {
     if (!deleteId) return;
@@ -113,14 +162,78 @@ const ListeCampements = () => {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="mb-4">
+            {/* Filtres */}
+            <div className="mb-6 p-4 bg-muted/30 rounded-lg border">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Région</label>
+                  <Select value={selectedRegion} onValueChange={(value) => {
+                    setSelectedRegion(value);
+                    setSelectedDepartement("all");
+                    setSelectedSousPrefecture("all");
+                  }}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Toutes les régions" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Toutes les régions</SelectItem>
+                      {regions.map(region => (
+                        <SelectItem key={region} value={region}>{region}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Département</label>
+                  <Select 
+                    value={selectedDepartement} 
+                    onValueChange={(value) => {
+                      setSelectedDepartement(value);
+                      setSelectedSousPrefecture("all");
+                    }}
+                    disabled={selectedRegion === "all"}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Tous les départements" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Tous les départements</SelectItem>
+                      {departements.map(dept => (
+                        <SelectItem key={dept} value={dept}>{dept}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Sous-préfecture</label>
+                  <Select 
+                    value={selectedSousPrefecture} 
+                    onValueChange={setSelectedSousPrefecture}
+                    disabled={selectedDepartement === "all"}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Toutes les sous-préfectures" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Toutes les sous-préfectures</SelectItem>
+                      {sousPrefectures.map(sp => (
+                        <SelectItem key={sp} value={sp}>{sp}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              
+              {/* Barre de recherche */}
               <div className="relative">
                 <Search
                   className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground"
                   size={18}
                 />
                 <Input
-                  placeholder="Rechercher par nom, région ou département..."
+                  placeholder="Rechercher par nom, région, département ou sous-préfecture..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-10"

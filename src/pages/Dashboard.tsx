@@ -4,57 +4,120 @@ import StatsCard from "@/components/StatsCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { useCampements } from "@/hooks/useCampements";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useState, useMemo } from "react";
 
 const Dashboard = () => {
   const { campements, stats: campmentsStats, isLoading } = useCampements();
+  const [selectedRegion, setSelectedRegion] = useState<string>("all");
+  const [selectedDepartement, setSelectedDepartement] = useState<string>("all");
+  const [selectedSousPrefecture, setSelectedSousPrefecture] = useState<string>("all");
+
+  // Obtenir les valeurs uniques pour les filtres
+  const regions = useMemo(() => {
+    return Array.from(new Set(campements.map(c => c.region))).sort();
+  }, [campements]);
+
+  const departements = useMemo(() => {
+    const filtered = selectedRegion === "all" 
+      ? campements 
+      : campements.filter(c => c.region === selectedRegion);
+    return Array.from(new Set(filtered.map(c => c.departement))).sort();
+  }, [campements, selectedRegion]);
+
+  const sousPrefectures = useMemo(() => {
+    let filtered = campements;
+    if (selectedRegion !== "all") {
+      filtered = filtered.filter(c => c.region === selectedRegion);
+    }
+    if (selectedDepartement !== "all") {
+      filtered = filtered.filter(c => c.departement === selectedDepartement);
+    }
+    return Array.from(new Set(filtered.map(c => c.sous_prefecture))).sort();
+  }, [campements, selectedRegion, selectedDepartement]);
+
+  // Filtrer les campements selon les critères
+  const filteredCampements = useMemo(() => {
+    let filtered = campements;
+    if (selectedRegion !== "all") {
+      filtered = filtered.filter(c => c.region === selectedRegion);
+    }
+    if (selectedDepartement !== "all") {
+      filtered = filtered.filter(c => c.departement === selectedDepartement);
+    }
+    if (selectedSousPrefecture !== "all") {
+      filtered = filtered.filter(c => c.sous_prefecture === selectedSousPrefecture);
+    }
+    return filtered;
+  }, [campements, selectedRegion, selectedDepartement, selectedSousPrefecture]);
+
+  // Recalculer les stats avec les campements filtrés
+  const filteredStats = useMemo(() => {
+    const totalPopulation = filteredCampements.reduce((sum, c) => sum + (c.population || 0), 0);
+    const regionsUniques = new Set(filteredCampements.map(c => c.region));
+    const departementsUniques = new Set(filteredCampements.map(c => c.departement));
+    
+    return {
+      totalCampements: filteredCampements.length,
+      totalPopulation,
+      nombreRegions: regionsUniques.size,
+      nombreDepartements: departementsUniques.size,
+    };
+  }, [filteredCampements]);
 
   const statsCards = [
     {
       title: "Campements enregistrés",
-      value: campmentsStats.totalCampements,
+      value: filteredStats.totalCampements,
       icon: MapPin,
-      trend: `${campmentsStats.totalCampements} au total`,
+      trend: `${filteredStats.totalCampements} au total`,
       iconColor: "text-primary",
     },
     {
       title: "Population totale",
-      value: campmentsStats.totalPopulation.toLocaleString(),
+      value: filteredStats.totalPopulation.toLocaleString(),
       icon: Users,
       trend: "Recensés",
       iconColor: "text-secondary",
     },
     {
       title: "Régions",
-      value: Object.keys(campmentsStats.campmentsParRegion).length,
+      value: filteredStats.nombreRegions,
       icon: Globe2,
       trend: "Couvertes",
       iconColor: "text-accent",
     },
     {
       title: "Départements",
-      value: Object.keys(campmentsStats.campmentsParDepartement).length,
+      value: filteredStats.nombreDepartements,
       icon: Building2,
       trend: "Couverts",
       iconColor: "text-primary",
     },
   ];
 
-  // Activités récentes basées sur les derniers campements
-  const recentActivity = campements.slice(0, 3).map((c) => ({
+  // Activités récentes basées sur les derniers campements filtrés
+  const recentActivity = filteredCampements.slice(0, 3).map((c) => ({
     id: c.id,
     action: "Campement enregistré",
     location: `${c.nom_campement} - ${c.departement}`,
     time: new Date(c.created_at).toLocaleDateString("fr-FR"),
   }));
 
-  // Données pour le graphique - top 10 départements
-  const departementData = Object.entries(campmentsStats.campmentsParDepartement)
-    .sort(([, a], [, b]) => b - a)
-    .slice(0, 10)
-    .map(([departement, count]) => ({
-      departement,
-      campements: count,
-    }));
+  // Données pour le graphique - top 10 départements des campements filtrés
+  const departementData = useMemo(() => {
+    const counts: Record<string, number> = {};
+    filteredCampements.forEach(c => {
+      counts[c.departement] = (counts[c.departement] || 0) + 1;
+    });
+    return Object.entries(counts)
+      .sort(([, a], [, b]) => b - a)
+      .slice(0, 10)
+      .map(([departement, count]) => ({
+        departement,
+        campements: count,
+      }));
+  }, [filteredCampements]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -70,6 +133,73 @@ const Dashboard = () => {
             Vue d'ensemble des campements ériges en villages en Côte d'Ivoire
           </p>
         </div>
+
+        {/* Filtres */}
+        <Card className="mb-6">
+          <CardContent className="pt-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label className="text-sm font-medium mb-2 block">Région</label>
+                <Select value={selectedRegion} onValueChange={(value) => {
+                  setSelectedRegion(value);
+                  setSelectedDepartement("all");
+                  setSelectedSousPrefecture("all");
+                }}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Toutes les régions" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Toutes les régions</SelectItem>
+                    {regions.map(region => (
+                      <SelectItem key={region} value={region}>{region}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <label className="text-sm font-medium mb-2 block">Département</label>
+                <Select 
+                  value={selectedDepartement} 
+                  onValueChange={(value) => {
+                    setSelectedDepartement(value);
+                    setSelectedSousPrefecture("all");
+                  }}
+                  disabled={selectedRegion === "all"}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Tous les départements" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Tous les départements</SelectItem>
+                    {departements.map(dept => (
+                      <SelectItem key={dept} value={dept}>{dept}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <label className="text-sm font-medium mb-2 block">Sous-préfecture</label>
+                <Select 
+                  value={selectedSousPrefecture} 
+                  onValueChange={setSelectedSousPrefecture}
+                  disabled={selectedDepartement === "all"}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Toutes les sous-préfectures" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Toutes les sous-préfectures</SelectItem>
+                    {sousPrefectures.map(sp => (
+                      <SelectItem key={sp} value={sp}>{sp}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Statistiques */}
         {isLoading ? (
