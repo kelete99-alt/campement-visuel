@@ -55,7 +55,7 @@ const SaisieForm = () => {
     eauPotable: false,
     nombrePompes: "",
     
-    // Autres infrastructures
+    // 7. Autres infrastructures
     equipementsSportifs: false,
     associationSportive: false,
     associationJeunes: false,
@@ -64,10 +64,14 @@ const SaisieForm = () => {
     cimetiere: false,
     siteTouristique: false,
     gareRoutiere: false,
-    
-    // Cultures
-    culturesIndustrielles: [] as string[],
-    culturesVivrieres: [] as string[],
+    cultureCafe: false,
+    cultureCacao: false,
+    cultureCoton: false,
+    cultureAnacarde: false,
+    cultureHevea: false,
+    cultureRiz: false,
+    cultureIgname: false,
+    cultureManioc: false,
     marcheVivres: false,
     magasinStockage: false,
     orgProducteurs: false,
@@ -142,8 +146,14 @@ const SaisieForm = () => {
           cimetiere: false,
           siteTouristique: false,
           gareRoutiere: false,
-          culturesIndustrielles: [],
-          culturesVivrieres: [],
+          cultureCafe: false,
+          cultureCacao: false,
+          cultureCoton: false,
+          cultureAnacarde: false,
+          cultureHevea: false,
+          cultureRiz: false,
+          cultureIgname: false,
+          cultureManioc: false,
           marcheVivres: false,
           magasinStockage: false,
           orgProducteurs: false,
@@ -468,7 +478,7 @@ const SaisieForm = () => {
               <CardTitle>II - Infrastructures disponibles</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
-              {/* École */}
+              {/* 1. École */}
               <div className="space-y-3">
                 <h3 className="font-semibold text-foreground">1. École Primaire</h3>
                 <div className="grid gap-4 md:grid-cols-2">
@@ -542,9 +552,9 @@ const SaisieForm = () => {
                 </div>
               </div>
 
-              {/* Autres infrastructures de base */}
+              {/* 3. Électricité */}
               <div className="space-y-3">
-                <h3 className="font-semibold text-foreground">3-6. Autres infrastructures</h3>
+                <h3 className="font-semibold text-foreground">3. Électricité</h3>
                 <div className="grid gap-4 md:grid-cols-2">
                   <div className="space-y-2">
                     <div className="flex items-center space-x-2">
@@ -575,17 +585,23 @@ const SaisieForm = () => {
                       </div>
                     )}
                   </div>
-                  <div className="space-y-2">
-                    <div className="flex items-center space-x-2">
-                      <Checkbox
-                        id="reseauTelephone"
-                        checked={formData.reseauTelephone}
-                        onCheckedChange={(checked) => setFormData({ ...formData, reseauTelephone: checked as boolean })}
-                      />
-                      <Label htmlFor="reseauTelephone" className="cursor-pointer">
-                        Accès réseau téléphonique
-                      </Label>
-                    </div>
+                </div>
+              </div>
+
+              {/* 4. Accès au réseau téléphonique */}
+              <div className="space-y-3">
+                <h3 className="font-semibold text-foreground">4. Accès au réseau téléphonique</h3>
+                <div className="space-y-2">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="reseauTelephone"
+                      checked={formData.reseauTelephone}
+                      onCheckedChange={(checked) => setFormData({ ...formData, reseauTelephone: checked as boolean })}
+                    />
+                    <Label htmlFor="reseauTelephone" className="cursor-pointer">
+                      Accès réseau téléphonique
+                    </Label>
+                  </div>
                     {formData.reseauTelephone && (
                       <div className="ml-6 space-y-3">
                         <div className="space-y-2">
@@ -635,11 +651,13 @@ const SaisieForm = () => {
                         )}
                       </div>
                     )}
-                  </div>
+                </div>
+              </div>
                   
-                  {/* Lieux de culte */}
-                  <div className="space-y-2">
-                    <Label className="font-semibold">5. Lieux de culte</Label>
+              {/* 5. Lieux de culte */}
+              <div className="space-y-3">
+                <h3 className="font-semibold text-foreground">5. Lieux de culte</h3>
+                <div className="space-y-2">
                     <div className="ml-6 space-y-3">
                       <div className="flex items-center space-x-2">
                         <Checkbox
@@ -711,7 +729,12 @@ const SaisieForm = () => {
                       </div>
                     </div>
                   </div>
-                  
+                </div>
+
+              {/* 6. Eau potable */}
+              <div className="space-y-3">
+                <h3 className="font-semibold text-foreground">6. Eau potable</h3>
+                <div className="grid gap-4 md:grid-cols-2">
                   <div className="flex items-center space-x-2">
                     <Checkbox
                       id="eauPotable"
@@ -734,6 +757,233 @@ const SaisieForm = () => {
                       />
                     </div>
                   )}
+                </div>
+              </div>
+
+              {/* 7. Autres infrastructures */}
+              <div className="space-y-4">
+                <h3 className="font-semibold text-foreground">7. Autres infrastructures à préciser</h3>
+                
+                {/* Équipements et associations */}
+                <div className="grid gap-3 md:grid-cols-2">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="equipementsSportifs"
+                      checked={formData.equipementsSportifs}
+                      onCheckedChange={(checked) => setFormData({ ...formData, equipementsSportifs: checked as boolean })}
+                    />
+                    <Label htmlFor="equipementsSportifs" className="cursor-pointer">
+                      Équipements sportifs (terrain de football)
+                    </Label>
+                  </div>
+                  
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="associationSportive"
+                      checked={formData.associationSportive}
+                      onCheckedChange={(checked) => setFormData({ ...formData, associationSportive: checked as boolean })}
+                    />
+                    <Label htmlFor="associationSportive" className="cursor-pointer">
+                      Association sportive
+                    </Label>
+                  </div>
+                  
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="associationJeunes"
+                      checked={formData.associationJeunes}
+                      onCheckedChange={(checked) => setFormData({ ...formData, associationJeunes: checked as boolean })}
+                    />
+                    <Label htmlFor="associationJeunes" className="cursor-pointer">
+                      Association de jeunes
+                    </Label>
+                  </div>
+                  
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="associationFemmes"
+                      checked={formData.associationFemmes}
+                      onCheckedChange={(checked) => setFormData({ ...formData, associationFemmes: checked as boolean })}
+                    />
+                    <Label htmlFor="associationFemmes" className="cursor-pointer">
+                      Association de femmes
+                    </Label>
+                  </div>
+                  
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="lotissement"
+                      checked={formData.lotissement}
+                      onCheckedChange={(checked) => setFormData({ ...formData, lotissement: checked as boolean })}
+                    />
+                    <Label htmlFor="lotissement" className="cursor-pointer">
+                      Lotissement
+                    </Label>
+                  </div>
+                  
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="cimetiere"
+                      checked={formData.cimetiere}
+                      onCheckedChange={(checked) => setFormData({ ...formData, cimetiere: checked as boolean })}
+                    />
+                    <Label htmlFor="cimetiere" className="cursor-pointer">
+                      Cimetière
+                    </Label>
+                  </div>
+                  
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="siteTouristique"
+                      checked={formData.siteTouristique}
+                      onCheckedChange={(checked) => setFormData({ ...formData, siteTouristique: checked as boolean })}
+                    />
+                    <Label htmlFor="siteTouristique" className="cursor-pointer">
+                      Site touristique
+                    </Label>
+                  </div>
+                  
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="gareRoutiere"
+                      checked={formData.gareRoutiere}
+                      onCheckedChange={(checked) => setFormData({ ...formData, gareRoutiere: checked as boolean })}
+                    />
+                    <Label htmlFor="gareRoutiere" className="cursor-pointer">
+                      Gare routière
+                    </Label>
+                  </div>
+                </div>
+
+                {/* Cultures industrielles */}
+                <div className="space-y-2">
+                  <Label className="font-semibold">Principale culture industrielle</Label>
+                  <div className="grid gap-3 md:grid-cols-3 ml-4">
+                    <div className="flex items-center space-x-2">
+                      <Checkbox
+                        id="cultureCafe"
+                        checked={formData.cultureCafe}
+                        onCheckedChange={(checked) => setFormData({ ...formData, cultureCafe: checked as boolean })}
+                      />
+                      <Label htmlFor="cultureCafe" className="cursor-pointer">Café</Label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <Checkbox
+                        id="cultureCacao"
+                        checked={formData.cultureCacao}
+                        onCheckedChange={(checked) => setFormData({ ...formData, cultureCacao: checked as boolean })}
+                      />
+                      <Label htmlFor="cultureCacao" className="cursor-pointer">Cacao</Label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <Checkbox
+                        id="cultureCoton"
+                        checked={formData.cultureCoton}
+                        onCheckedChange={(checked) => setFormData({ ...formData, cultureCoton: checked as boolean })}
+                      />
+                      <Label htmlFor="cultureCoton" className="cursor-pointer">Coton</Label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <Checkbox
+                        id="cultureAnacarde"
+                        checked={formData.cultureAnacarde}
+                        onCheckedChange={(checked) => setFormData({ ...formData, cultureAnacarde: checked as boolean })}
+                      />
+                      <Label htmlFor="cultureAnacarde" className="cursor-pointer">Anacarde</Label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <Checkbox
+                        id="cultureHevea"
+                        checked={formData.cultureHevea}
+                        onCheckedChange={(checked) => setFormData({ ...formData, cultureHevea: checked as boolean })}
+                      />
+                      <Label htmlFor="cultureHevea" className="cursor-pointer">Hévéa</Label>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Cultures vivrières */}
+                <div className="space-y-2">
+                  <Label className="font-semibold">Principale culture vivrière</Label>
+                  <div className="grid gap-3 md:grid-cols-3 ml-4">
+                    <div className="flex items-center space-x-2">
+                      <Checkbox
+                        id="cultureRiz"
+                        checked={formData.cultureRiz}
+                        onCheckedChange={(checked) => setFormData({ ...formData, cultureRiz: checked as boolean })}
+                      />
+                      <Label htmlFor="cultureRiz" className="cursor-pointer">Riz</Label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <Checkbox
+                        id="cultureIgname"
+                        checked={formData.cultureIgname}
+                        onCheckedChange={(checked) => setFormData({ ...formData, cultureIgname: checked as boolean })}
+                      />
+                      <Label htmlFor="cultureIgname" className="cursor-pointer">Igname</Label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <Checkbox
+                        id="cultureManioc"
+                        checked={formData.cultureManioc}
+                        onCheckedChange={(checked) => setFormData({ ...formData, cultureManioc: checked as boolean })}
+                      />
+                      <Label htmlFor="cultureManioc" className="cursor-pointer">Manioc</Label>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Commercialisation */}
+                <div className="grid gap-3 md:grid-cols-2">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="marcheVivres"
+                      checked={formData.marcheVivres}
+                      onCheckedChange={(checked) => setFormData({ ...formData, marcheVivres: checked as boolean })}
+                    />
+                    <Label htmlFor="marcheVivres" className="cursor-pointer">
+                      Marché de vivres
+                    </Label>
+                  </div>
+                  
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="magasinStockage"
+                      checked={formData.magasinStockage}
+                      onCheckedChange={(checked) => setFormData({ ...formData, magasinStockage: checked as boolean })}
+                    />
+                    <Label htmlFor="magasinStockage" className="cursor-pointer">
+                      Magasin de stockage
+                    </Label>
+                  </div>
+                  
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="orgProducteurs"
+                      checked={formData.orgProducteurs}
+                      onCheckedChange={(checked) => setFormData({ ...formData, orgProducteurs: checked as boolean })}
+                    />
+                    <Label htmlFor="orgProducteurs" className="cursor-pointer">
+                      Organisation de producteurs
+                    </Label>
+                  </div>
+                  
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="orgCommercialisation"
+                      checked={formData.orgCommercialisation}
+                      onCheckedChange={(checked) => setFormData({ ...formData, orgCommercialisation: checked as boolean })}
+                    />
+                    <Label htmlFor="orgCommercialisation" className="cursor-pointer">
+                      Organisation de la commercialisation
+                    </Label>
+                  </div>
                 </div>
               </div>
             </CardContent>
