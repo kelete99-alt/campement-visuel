@@ -4,9 +4,10 @@ import Navbar from "@/components/Navbar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Users, Search, Shield, User as UserIcon } from "lucide-react";
+import { Users, Search, Shield, User as UserIcon, Clock, Check, X } from "lucide-react";
 import { toast } from "sonner";
 
 interface UserProfile {
@@ -14,6 +15,7 @@ interface UserProfile {
   full_name: string | null;
   created_at: string;
   role: string;
+  approved: boolean;
   email?: string;
 }
 
@@ -21,6 +23,7 @@ const Admin = () => {
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [filteredUsers, setFilteredUsers] = useState<UserProfile[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [filterStatus, setFilterStatus] = useState<"all" | "pending" | "approved">("all");
   const [isLoading, setIsLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
 
@@ -98,19 +101,27 @@ const Admin = () => {
     fetchUsers();
   }, [isAdmin]);
 
-  // Filtrer les utilisateurs selon la recherche
+  // Filtrer les utilisateurs selon la recherche et le statut
   useEffect(() => {
-    if (!searchQuery.trim()) {
-      setFilteredUsers(users);
-      return;
+    let filtered = users;
+
+    // Filtre par statut
+    if (filterStatus === "pending") {
+      filtered = filtered.filter(u => !u.approved);
+    } else if (filterStatus === "approved") {
+      filtered = filtered.filter(u => u.approved);
     }
 
-    const filtered = users.filter(user => 
-      user.full_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      user.id.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    // Filtre par recherche
+    if (searchQuery.trim()) {
+      filtered = filtered.filter(user => 
+        user.full_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        user.id.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+
     setFilteredUsers(filtered);
-  }, [searchQuery, users]);
+  }, [searchQuery, filterStatus, users]);
 
   // Changer le rôle d'un utilisateur
   const handleRoleChange = async (userId: string, newRole: string) => {
@@ -140,6 +151,50 @@ const Admin = () => {
     } catch (error) {
       console.error("Erreur lors de la mise à jour du rôle:", error);
       toast.error("Erreur lors de la mise à jour du rôle");
+    }
+  };
+
+  // Approuver un utilisateur
+  const handleApprove = async (userId: string) => {
+    try {
+      const { error } = await supabase
+        .from("profiles")
+        .update({ approved: true })
+        .eq("id", userId);
+
+      if (error) throw error;
+
+      // Mettre à jour l'état local
+      setUsers(users.map(user => 
+        user.id === userId ? { ...user, approved: true } : user
+      ));
+
+      toast.success("Utilisateur approuvé avec succès");
+    } catch (error) {
+      console.error("Erreur lors de l'approbation:", error);
+      toast.error("Erreur lors de l'approbation");
+    }
+  };
+
+  // Refuser/Révoquer l'approbation d'un utilisateur
+  const handleRevoke = async (userId: string) => {
+    try {
+      const { error } = await supabase
+        .from("profiles")
+        .update({ approved: false })
+        .eq("id", userId);
+
+      if (error) throw error;
+
+      // Mettre à jour l'état local
+      setUsers(users.map(user => 
+        user.id === userId ? { ...user, approved: false } : user
+      ));
+
+      toast.success("Approbation révoquée avec succès");
+    } catch (error) {
+      console.error("Erreur lors de la révocation:", error);
+      toast.error("Erreur lors de la révocation");
     }
   };
 
@@ -179,7 +234,7 @@ const Admin = () => {
         </div>
 
         {/* Statistiques rapides */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
           <Card>
             <CardContent className="py-6">
               <div className="flex items-center gap-4">
@@ -217,9 +272,25 @@ const Admin = () => {
                   <UserIcon className="text-primary" size={24} />
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">Utilisateurs standards</p>
+                  <p className="text-sm text-muted-foreground">Utilisateurs approuvés</p>
                   <p className="text-2xl font-bold text-foreground">
-                    {users.filter(u => u.role === "user").length}
+                    {users.filter(u => u.approved).length}
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardContent className="py-6">
+              <div className="flex items-center gap-4">
+                <div className="rounded-lg bg-yellow-500/10 p-3">
+                  <Clock className="text-yellow-600" size={24} />
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">En attente</p>
+                  <p className="text-2xl font-bold text-foreground">
+                    {users.filter(u => !u.approved).length}
                   </p>
                 </div>
               </div>
@@ -230,16 +301,30 @@ const Admin = () => {
         {/* Liste des utilisateurs */}
         <Card>
           <CardHeader>
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-              <CardTitle>Liste des utilisateurs</CardTitle>
-              <div className="relative w-full sm:w-64">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={18} />
-                <Input
-                  placeholder="Rechercher un utilisateur..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10"
-                />
+            <div className="flex flex-col gap-4">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <CardTitle>Liste des utilisateurs</CardTitle>
+                <div className="flex gap-2 w-full sm:w-auto">
+                  <Select value={filterStatus} onValueChange={(value: "all" | "pending" | "approved") => setFilterStatus(value)}>
+                    <SelectTrigger className="w-full sm:w-40">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Tous</SelectItem>
+                      <SelectItem value="pending">En attente</SelectItem>
+                      <SelectItem value="approved">Approuvés</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <div className="relative flex-1 sm:w-64">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={18} />
+                    <Input
+                      placeholder="Rechercher..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="pl-10"
+                    />
+                  </div>
+                </div>
               </div>
             </div>
           </CardHeader>
@@ -261,8 +346,9 @@ const Admin = () => {
                     <TableRow>
                       <TableHead>Nom complet</TableHead>
                       <TableHead>Date d'inscription</TableHead>
+                      <TableHead>Statut</TableHead>
                       <TableHead>Rôle</TableHead>
-                      <TableHead>Action</TableHead>
+                      <TableHead>Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -275,31 +361,68 @@ const Admin = () => {
                           {new Date(user.created_at).toLocaleDateString("fr-FR")}
                         </TableCell>
                         <TableCell>
-                          {user.role === "admin" ? (
-                            <Badge variant="default" className="gap-1">
-                              <Shield size={14} />
-                              Administrateur
+                          {user.approved ? (
+                            <Badge variant="default" className="gap-1 bg-green-600">
+                              <Check size={14} />
+                              Approuvé
                             </Badge>
                           ) : (
-                            <Badge variant="secondary" className="gap-1">
-                              <UserIcon size={14} />
-                              Utilisateur
+                            <Badge variant="secondary" className="gap-1 bg-yellow-600 text-white">
+                              <Clock size={14} />
+                              En attente
                             </Badge>
                           )}
                         </TableCell>
                         <TableCell>
-                          <Select
-                            value={user.role}
-                            onValueChange={(value) => handleRoleChange(user.id, value)}
-                          >
-                            <SelectTrigger className="w-40">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="user">Utilisateur</SelectItem>
-                              <SelectItem value="admin">Administrateur</SelectItem>
-                            </SelectContent>
-                          </Select>
+                          {user.role === "admin" ? (
+                            <Badge variant="outline" className="gap-1">
+                              <Shield size={14} />
+                              Admin
+                            </Badge>
+                          ) : (
+                            <Badge variant="outline" className="gap-1">
+                              <UserIcon size={14} />
+                              User
+                            </Badge>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-2">
+                            <Select
+                              value={user.role}
+                              onValueChange={(value) => handleRoleChange(user.id, value)}
+                            >
+                              <SelectTrigger className="w-32 h-8 text-xs">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="user">Utilisateur</SelectItem>
+                                <SelectItem value="admin">Administrateur</SelectItem>
+                              </SelectContent>
+                            </Select>
+                            
+                            {!user.approved ? (
+                              <Button
+                                size="sm"
+                                variant="default"
+                                onClick={() => handleApprove(user.id)}
+                                className="h-8 gap-1"
+                              >
+                                <Check size={14} />
+                                Approuver
+                              </Button>
+                            ) : (
+                              <Button
+                                size="sm"
+                                variant="destructive"
+                                onClick={() => handleRevoke(user.id)}
+                                className="h-8 gap-1"
+                              >
+                                <X size={14} />
+                                Révoquer
+                              </Button>
+                            )}
+                          </div>
                         </TableCell>
                       </TableRow>
                     ))}
