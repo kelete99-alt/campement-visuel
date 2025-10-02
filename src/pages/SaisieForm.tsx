@@ -123,7 +123,7 @@ const SaisieForm = () => {
           santeStatut: "",
           depotPharmacie: false,
           electricite: data.electricite || false,
-          electriciteConnectivite: "",
+          electriciteConnectivite: data.electricite_connectivite || "",
           reseauTelephone: false,
           reseauType: "",
           reseauOperateur: "",
@@ -535,15 +535,34 @@ const SaisieForm = () => {
               <div className="space-y-3">
                 <h3 className="font-semibold text-foreground">3-6. Autres infrastructures</h3>
                 <div className="grid gap-4 md:grid-cols-2">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id="electricite"
-                      checked={formData.electricite}
-                      onCheckedChange={(checked) => setFormData({ ...formData, electricite: checked as boolean })}
-                    />
-                    <Label htmlFor="electricite" className="cursor-pointer">
-                      Électricité disponible
-                    </Label>
+                  <div className="space-y-2">
+                    <div className="flex items-center space-x-2">
+                      <Checkbox
+                        id="electricite"
+                        checked={formData.electricite}
+                        onCheckedChange={(checked) => setFormData({ ...formData, electricite: checked as boolean })}
+                      />
+                      <Label htmlFor="electricite" className="cursor-pointer">
+                        Électricité disponible
+                      </Label>
+                    </div>
+                    {formData.electricite && (
+                      <div className="ml-6 space-y-2">
+                        <Label htmlFor="electriciteConnectivite">Type de connectivité</Label>
+                        <Select 
+                          value={formData.electriciteConnectivite} 
+                          onValueChange={(value) => setFormData({ ...formData, electriciteConnectivite: value })}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Sélectionner" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="reseau_national">Réseau national</SelectItem>
+                            <SelectItem value="isole">Isolé</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    )}
                   </div>
                   <div className="flex items-center space-x-2">
                     <Checkbox
