@@ -3,7 +3,7 @@ import { FileText, Home, Activity, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import logoDgat from "@/assets/logo-dgat.png";
+import logoDgat from "@/assets/logo-dgat.jpg";
 import armoiries from "@/assets/armoiries-ci.png";
 
 const Navbar = () => {
