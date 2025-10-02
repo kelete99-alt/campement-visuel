@@ -1,7 +1,6 @@
 import { MapPin, Users, Globe2, Building2 } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import StatsCard from "@/components/StatsCard";
-import CampementMap from "@/components/CampementMap";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const Dashboard = () => {
@@ -77,7 +76,9 @@ const Dashboard = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <CampementMap />
+                <div className="h-[500px] w-full rounded-lg overflow-hidden border border-border shadow-sm bg-muted flex items-center justify-center">
+                  <p className="text-muted-foreground">Carte interactive Leaflet (à activer)</p>
+                </div>
               </CardContent>
             </Card>
           </div>
