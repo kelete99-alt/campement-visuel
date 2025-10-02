@@ -7,6 +7,7 @@ import SaisieForm from "./pages/SaisieForm";
 import ActivityLog from "./pages/ActivityLog";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
+import ListeCampements from "./pages/ListeCampements";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 const queryClient = new QueryClient();
@@ -31,6 +32,22 @@ const App = () => (
           element={
             <ProtectedRoute>
               <SaisieForm />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/saisie/:id"
+          element={
+            <ProtectedRoute>
+              <SaisieForm />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/campements"
+          element={
+            <ProtectedRoute>
+              <ListeCampements />
             </ProtectedRoute>
           }
         />

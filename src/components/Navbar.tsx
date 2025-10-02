@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { FileText, Home, Activity, LogOut } from "lucide-react";
+import { FileText, Home, Activity, LogOut, List } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -64,6 +64,17 @@ const Navbar = () => {
             >
               <FileText size={18} />
               <span className="hidden sm:inline">Nouvelle fiche</span>
+            </Link>
+            <Link
+              to="/campements"
+              className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
+                isActive("/campements")
+                  ? "bg-primary text-primary-foreground"
+                  : "text-foreground hover:bg-muted"
+              }`}
+            >
+              <List size={18} />
+              <span className="hidden sm:inline">Liste</span>
             </Link>
             <Link
               to="/activites"

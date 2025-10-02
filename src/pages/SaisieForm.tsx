@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,11 +10,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { ArrowLeft, Save } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 const SaisieForm = () => {
   const navigate = useNavigate();
+  const { id } = useParams();
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     // Circonscription de rattachement
+    region: "",
     departement: "",
     sousPrefecture: "",
     village: "",
@@ -77,21 +81,147 @@ const SaisieForm = () => {
     observations: "",
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  useEffect(() => {
+    if (id) {
+      loadCampement();
+    }
+  }, [id]);
+
+  const loadCampement = async () => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from("campements")
+        .select("*")
+        .eq("id", id)
+        .single();
+
+      if (error) throw error;
+
+      if (data) {
+        setFormData({
+          region: data.region || "",
+          departement: data.departement || "",
+          sousPrefecture: data.sous_prefecture || "",
+          village: data.village_rattachement || "",
+          toponymie: data.nom_campement || "",
+          populationTotale: data.population?.toString() || "",
+          nombreHabitantsRGPH: data.nombre_menages?.toString() || "",
+          pourcentageEtrangers: "",
+          nationalitesDominantes: "",
+          nationaliteChef: "",
+          identiteFondateur: "",
+          anneeCreation: "",
+          distanceVillage: data.distance_village?.toString() || "",
+          natureVoie: data.route_acces || "",
+          etatVoie: "",
+          activiteEconomique: "",
+          situationGeographique: "",
+          ecoleStatut: "",
+          ecoleNombreClasses: "",
+          santeType: "",
+          santeStatut: "",
+          depotPharmacie: false,
+          electricite: data.electricite || false,
+          electriciteConnectivite: "",
+          reseauTelephone: false,
+          reseauType: "",
+          reseauOperateur: "",
+          lieuxCulte: [],
+          eauPotable: data.eau_potable || false,
+          nombrePompes: "",
+          equipementsSportifs: false,
+          associationSportive: false,
+          associationJeunes: false,
+          associationFemmes: false,
+          lotissement: false,
+          cimetiere: false,
+          siteTouristique: false,
+          gareRoutiere: false,
+          culturesIndustrielles: [],
+          culturesVivrieres: [],
+          marcheVivres: false,
+          magasinStockage: false,
+          orgProducteurs: false,
+          orgCommercialisation: false,
+          avisChefCampement: data.avis_chef_village || "",
+          avisChefVillage: data.avis_chef_village || "",
+          avisSousPrefet: data.avis_sous_prefet || "",
+          avisPrefet: data.avis_prefet || "",
+          observations: data.observations || "",
+        });
+      }
+    } catch (error) {
+      console.error("Erreur de chargement:", error);
+      toast.error("Erreur lors du chargement du campement");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     // Validation basique
-    if (!formData.toponymie || !formData.departement) {
+    if (!formData.toponymie || !formData.departement || !formData.region) {
       toast.error("Veuillez remplir les champs obligatoires");
       return;
     }
-    
-    // TODO: Envoyer les données au backend
-    console.log("Données du formulaire:", formData);
-    toast.success("Fiche enregistrée avec succès !");
-    
-    // Redirection vers le dashboard
-    setTimeout(() => navigate("/"), 1500);
+
+    try {
+      setLoading(true);
+
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast.error("Utilisateur non authentifié");
+        return;
+      }
+
+      const campementData = {
+        user_id: user.id,
+        nom_campement: formData.toponymie,
+        region: formData.region,
+        departement: formData.departement,
+        sous_prefecture: formData.sousPrefecture,
+        village_rattachement: formData.village,
+        distance_village: formData.distanceVillage ? parseFloat(formData.distanceVillage) : null,
+        population: formData.populationTotale ? parseInt(formData.populationTotale) : null,
+        nombre_menages: formData.nombreHabitantsRGPH ? parseInt(formData.nombreHabitantsRGPH) : null,
+        ecole: !!formData.ecoleStatut,
+        centre_sante: !!formData.santeType,
+        eau_potable: formData.eauPotable,
+        electricite: formData.electricite,
+        route_acces: formData.natureVoie,
+        avis_prefet: formData.avisPrefet,
+        avis_sous_prefet: formData.avisSousPrefet,
+        avis_chef_village: formData.avisChefVillage,
+        observations: formData.observations,
+      };
+
+      if (id) {
+        const { error } = await supabase
+          .from("campements")
+          .update(campementData)
+          .eq("id", id);
+
+        if (error) throw error;
+        toast.success("Campement mis à jour avec succès !");
+      } else {
+        const { error } = await supabase
+          .from("campements")
+          .insert(campementData);
+
+        if (error) throw error;
+        toast.success("Campement enregistré avec succès !");
+      }
+
+      setTimeout(() => navigate("/campements"), 1500);
+    } catch (error) {
+      console.error("Erreur lors de la sauvegarde:", error);
+      toast.error("Erreur lors de la sauvegarde");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -110,7 +240,7 @@ const SaisieForm = () => {
           </Button>
           
           <h1 className="text-3xl font-bold text-foreground mb-2">
-            Fiche technique d'érection de campement en village
+            {id ? "Modifier" : "Nouvelle"} fiche technique d'érection de campement
           </h1>
           <p className="text-muted-foreground">
             Saisie complète des informations conformément au formulaire DGAT
@@ -124,7 +254,17 @@ const SaisieForm = () => {
               <CardTitle>Circonscription de rattachement du campement</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="grid gap-4 md:grid-cols-3">
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                <div className="space-y-2">
+                  <Label htmlFor="region">Région *</Label>
+                  <Input
+                    id="region"
+                    value={formData.region}
+                    onChange={(e) => setFormData({ ...formData, region: e.target.value })}
+                    placeholder="Ex: Lagunes"
+                    required
+                  />
+                </div>
                 <div className="space-y-2">
                   <Label htmlFor="departement">Département *</Label>
                   <Input
@@ -515,13 +655,14 @@ const SaisieForm = () => {
             <Button
               type="button"
               variant="outline"
-              onClick={() => navigate("/")}
+              onClick={() => navigate("/campements")}
+              disabled={loading}
             >
               Annuler
             </Button>
-            <Button type="submit" className="gap-2">
+            <Button type="submit" className="gap-2" disabled={loading}>
               <Save size={18} />
-              Enregistrer la fiche
+              {loading ? "Enregistrement..." : (id ? "Mettre à jour" : "Enregistrer la fiche")}
             </Button>
           </div>
         </form>

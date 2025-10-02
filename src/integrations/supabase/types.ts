@@ -14,6 +14,78 @@ export type Database = {
   }
   public: {
     Tables: {
+      campements: {
+        Row: {
+          avis_chef_village: string | null
+          avis_prefet: string | null
+          avis_sous_prefet: string | null
+          centre_sante: boolean | null
+          created_at: string | null
+          departement: string
+          distance_village: number | null
+          eau_potable: boolean | null
+          ecole: boolean | null
+          electricite: boolean | null
+          id: string
+          nom_campement: string
+          nombre_menages: number | null
+          observations: string | null
+          population: number | null
+          region: string
+          route_acces: string | null
+          sous_prefecture: string
+          updated_at: string | null
+          user_id: string
+          village_rattachement: string
+        }
+        Insert: {
+          avis_chef_village?: string | null
+          avis_prefet?: string | null
+          avis_sous_prefet?: string | null
+          centre_sante?: boolean | null
+          created_at?: string | null
+          departement: string
+          distance_village?: number | null
+          eau_potable?: boolean | null
+          ecole?: boolean | null
+          electricite?: boolean | null
+          id?: string
+          nom_campement: string
+          nombre_menages?: number | null
+          observations?: string | null
+          population?: number | null
+          region: string
+          route_acces?: string | null
+          sous_prefecture: string
+          updated_at?: string | null
+          user_id: string
+          village_rattachement: string
+        }
+        Update: {
+          avis_chef_village?: string | null
+          avis_prefet?: string | null
+          avis_sous_prefet?: string | null
+          centre_sante?: boolean | null
+          created_at?: string | null
+          departement?: string
+          distance_village?: number | null
+          eau_potable?: boolean | null
+          ecole?: boolean | null
+          electricite?: boolean | null
+          id?: string
+          nom_campement?: string
+          nombre_menages?: number | null
+          observations?: string | null
+          population?: number | null
+          region?: string
+          route_acces?: string | null
+          sous_prefecture?: string
+          updated_at?: string | null
+          user_id?: string
+          village_rattachement?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string | null
