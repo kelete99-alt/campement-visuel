@@ -17,6 +17,8 @@ export interface Campement {
   eau_potable: boolean | null;
   electricite: boolean | null;
   reseau_telephone: boolean | null;
+  latitude: number | null;
+  longitude: number | null;
   created_at: string;
   updated_at: string;
 }

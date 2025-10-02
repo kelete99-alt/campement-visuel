@@ -6,6 +6,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsive
 import { useCampements } from "@/hooks/useCampements";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useState, useMemo } from "react";
+import DynamicCampementMap from "@/components/DynamicCampementMap";
 
 const Dashboard = () => {
   const { campements, stats: campmentsStats, isLoading } = useCampements();
@@ -247,9 +248,7 @@ const Dashboard = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="h-[500px] w-full rounded-lg overflow-hidden border border-border shadow-sm bg-muted flex items-center justify-center">
-                  <p className="text-muted-foreground">Carte interactive Leaflet (à activer)</p>
-                </div>
+                <DynamicCampementMap campements={filteredCampements} />
               </CardContent>
             </Card>
           </div>
