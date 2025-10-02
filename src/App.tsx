@@ -5,7 +5,9 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Dashboard from "./pages/Dashboard";
 import SaisieForm from "./pages/SaisieForm";
 import ActivityLog from "./pages/ActivityLog";
+import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 const queryClient = new QueryClient();
 
@@ -15,9 +17,31 @@ const App = () => (
     <Sonner />
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Dashboard />} />
-        <Route path="/saisie" element={<SaisieForm />} />
-        <Route path="/activites" element={<ActivityLog />} />
+        <Route path="/auth" element={<Auth />} />
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/saisie"
+          element={
+            <ProtectedRoute>
+              <SaisieForm />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/activites"
+          element={
+            <ProtectedRoute>
+              <ActivityLog />
+            </ProtectedRoute>
+          }
+        />
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
         <Route path="*" element={<NotFound />} />
       </Routes>

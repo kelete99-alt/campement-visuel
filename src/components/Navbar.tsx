@@ -1,12 +1,26 @@
-import { Link, useLocation } from "react-router-dom";
-import { FileText, Home, Activity } from "lucide-react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { FileText, Home, Activity, LogOut } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 import logoDgat from "@/assets/logo-dgat.png";
 import armoiries from "@/assets/armoiries-ci.png";
 
 const Navbar = () => {
   const location = useLocation();
+  const navigate = useNavigate();
 
   const isActive = (path: string) => location.pathname === path;
+
+  const handleLogout = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      toast.error("Erreur lors de la déconnexion");
+    } else {
+      toast.success("Déconnexion réussie");
+      navigate("/auth");
+    }
+  };
 
   return (
     <nav className="sticky top-0 z-50 border-b border-border bg-card shadow-sm">
@@ -62,6 +76,15 @@ const Navbar = () => {
               <Activity size={18} />
               <span className="hidden sm:inline">Activités</span>
             </Link>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleLogout}
+              className="flex items-center gap-2"
+            >
+              <LogOut size={18} />
+              <span className="hidden sm:inline">Déconnexion</span>
+            </Button>
           </div>
         </div>
       </div>
