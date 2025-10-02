@@ -14,21 +14,33 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
 
   useEffect(() => {
     const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      setSession(session);
-      
-      if (session?.user) {
-        // Vérifier si l'utilisateur est approuvé
-        const { data: profile } = await supabase
-          .from("profiles")
-          .select("approved")
-          .eq("id", session.user.id)
-          .single();
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        setSession(session);
         
-        setIsApproved(profile?.approved || false);
+        if (session?.user) {
+          // Vérifier si l'utilisateur est approuvé
+          const { data: profile, error } = await supabase
+            .from("profiles")
+            .select("approved")
+            .eq("id", session.user.id)
+            .maybeSingle();
+          
+          if (error) {
+            console.error("Erreur lors de la vérification du profil:", error);
+          }
+          
+          // Si pas de profil trouvé ou approved est null, considérer comme non approuvé
+          setIsApproved(profile?.approved === true);
+        } else {
+          setIsApproved(false);
+        }
+      } catch (error) {
+        console.error("Erreur lors de la vérification de l'authentification:", error);
+        setIsApproved(false);
+      } finally {
+        setIsLoading(false);
       }
-      
-      setIsLoading(false);
     };
 
     checkAuth();
@@ -37,13 +49,24 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
       setSession(session);
       
       if (session?.user) {
-        const { data: profile } = await supabase
-          .from("profiles")
-          .select("approved")
-          .eq("id", session.user.id)
-          .single();
-        
-        setIsApproved(profile?.approved || false);
+        try {
+          const { data: profile, error } = await supabase
+            .from("profiles")
+            .select("approved")
+            .eq("id", session.user.id)
+            .maybeSingle();
+          
+          if (error) {
+            console.error("Erreur lors de la vérification du profil:", error);
+          }
+          
+          setIsApproved(profile?.approved === true);
+        } catch (error) {
+          console.error("Erreur:", error);
+          setIsApproved(false);
+        }
+      } else {
+        setIsApproved(false);
       }
     });
 
