@@ -524,9 +524,6 @@ const SaisieForm = () => {
                           <SelectItem value="Séguéla">Séguéla</SelectItem>
                         </>
                       )}
-                      {!formData.region && (
-                        <SelectItem value="" disabled>Sélectionner d'abord une région</SelectItem>
-                      )}
                     </SelectContent>
                   </Select>
                 </div>
