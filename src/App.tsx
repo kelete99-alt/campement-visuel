@@ -2,6 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { useState } from "react";
 import Dashboard from "./pages/Dashboard";
 import SaisieForm from "./pages/SaisieForm";
 import ActivityLog from "./pages/ActivityLog";
@@ -12,9 +13,10 @@ import Admin from "./pages/Admin";
 import PendingApproval from "./pages/PendingApproval";
 import ProtectedRoute from "./components/ProtectedRoute";
 
-const queryClient = new QueryClient();
+const App = () => {
+  const [queryClient] = useState(() => new QueryClient());
 
-const App = () => (
+  return (
   <QueryClientProvider client={queryClient}>
     <Toaster />
     <Sonner />
@@ -75,6 +77,7 @@ const App = () => (
       </Routes>
     </BrowserRouter>
   </QueryClientProvider>
-);
+  );
+};
 
 export default App;
