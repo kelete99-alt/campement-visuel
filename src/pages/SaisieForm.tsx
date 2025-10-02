@@ -16,6 +16,203 @@ const SaisieForm = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const [loading, setLoading] = useState(false);
+
+  // Structure: Region -> Département -> [Sous-préfectures]
+  const adminData: Record<string, Record<string, string[]>> = {
+    "ABIDJAN": {
+      "Abidjan": ["ABIDJAN", "ANYAMA", "BINGERVILLE", "BROFODOUME", "SONGON"]
+    },
+    "AGNEBY-TIASSA": {
+      "Agboville": ["ABOUDE", "AGBOVILLE", "ANANGUIE", "ATTOBROU", "AZAGUIE", "CECHI", "GRAND-MORIE", "GUESSIGUIE", "LOVIGUIE", "ORESS-KROBOU", "RUBINO"],
+      "Sikensi": ["GOMON", "SIKENSI"],
+      "Taabo": ["PACOBO", "TAABO"],
+      "Tiassalé": ["GBOLOUVILLE(ex BINA-BOUS)", "MOROKRO", "N'DOUCI", "TIASSALE"]
+    },
+    "BAFING": {
+      "Koro": ["BOOKO", "BOROTOU", "KORO", "MAHANDOUGOU", "NIOKOSSO"],
+      "Ouaninou": ["GBELO", "GOUEKAN", "KOONAN", "OUANINOU", "SABOUDOUGOU", "SANTA"],
+      "Touba": ["DIOMAN", "FOUNGBESSO", "GUINTEGUELA", "TOUBA"]
+    },
+    "BAGOUE": {
+      "Boundiali": ["BAYA", "BOUNDIALI", "GANAONI", "KASSERE", "SIEMPURGO"],
+      "Kouto": ["BLESSEGUE", "GBON", "KOLIA", "KOUTO", "SIANHALA"],
+      "Tengréla": ["DEBETE", "KANAKONO", "PAPARA", "TENGRELA"]
+    },
+    "BELIER": {
+      "Didievi": ["BOLI", "DIDIEVI", "MOLONOU-BLE", "RAVIART", "TIE-N'DIEKRO"],
+      "Djekanou": ["BONIKRO", "DJEKANOU"],
+      "Tiebissou": ["LOMOKANKRO", "MOLONOU", "TIEBISSOU", "YAKPABO-SAKASSOU"],
+      "Toumodi": ["ANGODA", "KOKUMBO", "KPOUEBO", "TOUMODI"]
+    },
+    "BERE": {
+      "Dianra": ["DIANRA", "DIANRA-VILLAGE"],
+      "Kounahiri": ["KONGASSO", "KOUNAHIRI"],
+      "Mankono": ["BOUANDOUGOU", "MANKONO", "MARANDALLAH", "SARHALA", "TIENINGBOUE"]
+    },
+    "BOUNKANI": {
+      "Bouna": ["BOUKO", "BOUNA", "ONDEFIDOUO", "YOUNDOUO"],
+      "Doropo": ["DANOA", "DOROPO", "KALAMON", "NIAMOUE"],
+      "Nassian": ["BOGOFA", "KAKPIN", "KOTOUBA", "NASSIAN", "SOMINASSE"],
+      "Tehini": ["GOGO", "TEHINI", "TOUGBO"]
+    },
+    "CAVALLY": {
+      "Blolequin": ["BLOLEQUIN", "DIBOKE", "DOKE", "TINHOU", "ZEAGLO"],
+      "Guiglo": ["BEDY-GOAZON", "GUIGLO", "KAADE", "NIZAHON"],
+      "Taï": ["TAI", "ZAGNE"],
+      "Toulepleu": ["BAKOUBLY", "MEO", "NEZOBLY", "PEHE", "TIOBLY", "TOULEPLEU"]
+    },
+    "FOLON": {
+      "Kaniasso": ["GOULIA", "KANIASSO", "MAHANDIANA-SOKOURANI"],
+      "Minignan": ["KIMBIRILA-NORD", "MINIGNAN", "SOKORO", "TIENKO"]
+    },
+    "GBEKE": {
+      "Béoumi": ["ANDO-KEKRENOU", "BEOUMI", "BODOKRO", "KONDROBO", "LOLOBO", "MARABADJASSA", "N'GUESSANKRO"],
+      "Botro": ["BOTRO", "DIABO", "KROFOINSOU", "LANGUIBONOU"],
+      "Bouaké": ["BOUAKE", "BOUNDA", "BROBO", "DJEBONOUA", "MAMINI"],
+      "Sakassou": ["AYAOU-SRAN", "DIBRI-ASRIKRO", "SAKASSOU", "TOUMODI-SAKASSOU"]
+    },
+    "GBOKLE": {
+      "Fresco": ["DAHIRI", "FRESCO", "GBAGBAM"],
+      "Sassandra": ["DAKPADOU", "GRIHIRI", "LOBAKUYA", "MEDON", "SAGO", "SASSANDRA"]
+    },
+    "GOH": {
+      "Gagnoa": ["BAYOTA", "DAHIEPA-KEHI", "DIGNAGO", "DOUKOUYO", "DOUGROUPALEGNOA", "GAGNOA", "GALEBOUO", "GNAGBODOUGNOA", "GUIBEROUA", "OURAGAHIO", "SERIHIO", "YOPOHUE"],
+      "Oumé": ["DIEGONEFLA", "GUEPAHOUO", "OUME", "TONLA"]
+    },
+    "GONTOUGO": {
+      "Bondoukou": ["APPIMANDOUM", "BONDO", "BONDOUKOU", "GOUMERE", "LAOUDI-BA", "PINDA-BOROKRO", "SAPLI-SEPINGO", "SOROBANGO", "TABAGNE", "TAGADI", "YEZIMALA"],
+      "Koun-Fao": ["BOAHIA", "KOKOMIAN", "KOUN-FAO", "KOUASSI-DATEKRO", "TANKESSE", "TIENKOIKRO"],
+      "Sandégué": ["BANDAKAGNI-TOMORA", "DIMANDOUGOU", "SANDEGUE", "YOROBODI"],
+      "Tanda": ["AMANVI", "DIAMBA", "TANDA", "TCHEDIO"],
+      "Transua": ["ASSUEFRY", "KOUASSIA-NIAGUINI", "TRANSUA"]
+    },
+    "GRANDS-PONTS": {
+      "Dabou": ["DABOU", "LOPOU", "TOUPAH"],
+      "Grand-Lahou": ["AHOUANOU", "BACANDA", "EBONOU", "GRAND-LAHOU", "TOUKOUZOU"],
+      "Jacqueville": ["ATTOUTOU", "JACQUEVILLE"]
+    },
+    "GUEMON": {
+      "Bangolo": ["BANGOLO", "BEOUE-ZIBIAO", "BLENIMEOUIN", "DIEOUZON", "GOHOUO-ZAGNA", "GUINGLO-TAHOUAKE", "KAHIN-ZARABAON", "ZEO", "ZOU"],
+      "Duékoué": ["BAGOHOUO", "DUEKOUE", "GBAPLEU", "GUEHIEBLY", "GUEZON"],
+      "Facobly": ["FACOBLY", "GUEZON", "KOUA", "SEMIEN", "TIENY-SEABLY"],
+      "Kouibly": ["KOUIBLY", "NIDROU", "OUYABLY-GNONDROU", "TOTRODROU"]
+    },
+    "HAMBOL": {
+      "Dabakala": ["BASSAWA", "BONIEREDOUGOU", "DABAKALA", "FOUMBOLO", "NIEMENE", "SATAMA-SOKORO", "SATAMA-SOKOURA", "SOKALA-SOBARA", "TENDENE-BAMBARASSO", "YAOSSEDOUGOU"],
+      "Katiola": ["FRONAN", "KATIOLA", "TIMBE"],
+      "Niakaramandougou": ["ARIKOKAHA", "BADIKAHA", "NIAKARAMADOUGOU", "NIEDEKAHA", "TAFIRE", "TORTIYA"]
+    },
+    "HAUT-SASSANDRA": {
+      "Daloa": ["BEDIALA", "DALOA", "GADOUAN", "GBOGUHE", "GONATE", "ZAIBO"],
+      "Issia": ["BOGUEDIA", "IBOGUHE", "ISSIA", "NAHIO", "NAMANE", "SAIOUA", "TAPEGUIA"],
+      "Vavoua": ["BAZRA NATTIS", "DANANON", "DANIA", "KETRO BASSAM", "SEITIFLA", "VAVOUA"],
+      "Zoukougbeu": ["DOMANGBEU", "GREGBEU", "GUESSABO", "ZOUKOUGBEU"]
+    },
+    "IFFOU": {
+      "Daoukro": ["DAOUKRO", "ETTROKRO", "N'GATTAKRO", "SAMANZA"],
+      "M'Bahiakro": ["BONGUERA", "KONDOSSOU", "M'BAHIAKRO"],
+      "Ouelle": ["AKPASSANOU", "ANANDA", "OUELLE"],
+      "Prikro": ["ANIANOU", "FAMIENKRO", "KOFFI-AMONKRO", "NAFANA", "PRIKRO"]
+    },
+    "INDENIE-DJUABLIN": {
+      "Abengourou": ["ABENGOUROU", "AMELEKIA", "ANIASSUE", "EBILASSOKRO", "NIABLE", "YAKASSE-FEYASSE", "ZARANOU"],
+      "Agnibilékrou": ["AGNIBILEKROU", "AKOBOISSUE", "DAME", "DUFFREBO", "TANGUELAN"],
+      "Bettié": ["BETTIE", "DIAMARAKRO"]
+    },
+    "KABADOUGOU": {
+      "Gbeleban": ["GBELEBAN", "SAMANGO", "SEYDOUGOU"],
+      "Madinani": ["FENGOLO", "MADINANI", "N'GOLOBLASSO"],
+      "Odienné": ["BAKO", "BOUGOUSSO", "DIOULATIEDOUGOU", "ODIENNE", "TIEME"],
+      "Samatiguila": ["KIMBIRILA-SUD", "SAMATIGUILA"],
+      "Seguelon": ["GBONGAHA", "SEGUELON"]
+    },
+    "LA ME": {
+      "Akoupé": ["AFFERY", "AKOUPE", "BECOUEFIN"],
+      "Adzopé": ["ADZOPE", "AGOU", "ANNEPE", "ASSIKOI", "BECEDI-BRIGNAN", "YAKASSE-ME"],
+      "Alépé": ["ABOISSO-COMOE", "ALEPE", "ALLOSSO", "DANGUIRA", "OGHLWAPO"],
+      "Yakasse-Attobrou": ["ABONGOUA", "BIEBY", "YAKASSE-ATTOBROU"]
+    },
+    "LOH-DJIBOUA": {
+      "Divo": ["CHIEPO", "DIDOKO", "DIVO", "HIRE", "NEBO", "OGOUDOU", "ZEGO"],
+      "Guitry": ["DAIRO-DIDIZO", "GUITRY", "LAUZOUA", "YOCOBOUE"],
+      "Lakota": ["DJIDJI", "GAGORE", "GOUDOUKO", "LAKOTA", "NIAMBEZARIA", "ZIKISSO"]
+    },
+    "MARAHOUE": {
+      "Bonon": ["BONON", "ZAGUIETA"],
+      "Bouaflé": ["BEGBESSOU", "BOUAFLE", "N'DOUFFOUKANKRO", "PAKOUABO", "TIBEITA"],
+      "Gohitafla": ["GOHITAFLA", "IRIEFLA", "MAMINIGUI"],
+      "Sinfra": ["BAZRE", "KONONFLA", "KOUETINFLA", "SINFRA"],
+      "Zuenoula": ["KANZRA", "VOUEBOUFLA", "ZANZRA", "ZUENOULA"]
+    },
+    "MORONOU": {
+      "Arrah": ["ARRAH", "KOTOBI", "KREGBE"],
+      "Bongouanou": ["ANDE", "ASSIE-KOUMASSI", "BONGOUANOU", "N'GUESSANKRO"],
+      "M'Batto": ["ANOUMABA", "ASSAHARA", "M'BATTO", "TIEMELEKRO"]
+    },
+    "N'ZI": {
+      "Bocanda": ["BENGASSOU", "BOCANDA", "KOUADIOBLEKRO", "N'ZECREZESSOU"],
+      "Dimbokro": ["ABIGUI", "DIANGOKRO", "DIMBOKRO", "NOFOU"],
+      "Kouassi-Kouassikro": ["KOUASSI-KOUASSIKRO", "MEKRO"]
+    },
+    "NAWA": {
+      "Buyo": ["BUYO", "DAPEOUA"],
+      "Guéyo": ["DABOUYO", "GUEYO"],
+      "Meagui": ["GNAMANGUI", "MEAGUI", "OUPOYO"],
+      "Soubré": ["GRAND-ZATTRY", "LILIYO", "OKROUYO", "SOUBRE"]
+    },
+    "PORO": {
+      "Dikodougou": ["BORON", "DIKODOUGOU", "GUIEMBE"],
+      "Korhogo": ["DASSOUNGBOHO", "KANOROBA", "KARAKORO", "KIEMOU", "KOMBOLOKOURA", "KOMBORODOUGOU", "KONI", "KORHOGO", "LATAHA", "N'GANON", "NAFOUN", "NAPIELEDOUGOU", "NIOFOIN", "SIRASSO", "SOHOUO", "TIORONIARADOUGOU"],
+      "M'Bengué": ["BOUGOU", "KATIALI", "KATOGO", "M'BENGUE"],
+      "Sinématiali": ["BAHOUAKAHA", "KAGBOLODOUGOU", "SIDIOGO", "SINEMATIALI"]
+    },
+    "SAN-PEDRO": {
+      "San-Pédro": ["DOBA", "DOGBO", "GABIADJI", "GRAND-BEREBY", "SAN-PEDRO"],
+      "Tabou": ["DAPO-IBOKE", "DJAMANDIOKE", "DJOUROUTOU", "GRABO", "OLODIO", "TABOU"]
+    },
+    "SUD-COMOE": {
+      "Aboisso": ["ABOISSO", "ADAOU", "ADJOUAN", "AYAME", "BIANOUAN", "KOUAKRO", "MAFERE", "YAOU"],
+      "Adiaké": ["ADIAKE", "ASSINIE-MAFIA", "ETUEBOUE"],
+      "Grand-Bassam": ["BONGO", "BONOUA", "GRAND-BASSAM"],
+      "Tiapoum": ["NOE", "NOUAMOU", "TIAPOUM"]
+    },
+    "TCHOLOGO": {
+      "Ferkessédougou": ["FERKESSEDOUGOU", "KOUMBALA", "TOGONIERE"],
+      "Kong": ["BILIMONO", "KONG", "NAFANA", "SIKOLO"],
+      "Ouangolodougou": ["DIAWALA", "KAOUARA", "NIELLE", "OUANGOLODOUGOU", "TOUMOUKORO"]
+    },
+    "TONKPI": {
+      "Biankouma": ["BIANKOUMA", "BLAPLEU", "GBANGBEGOUINE", "GBONNE", "GOUINE", "KPATA", "SANTA"],
+      "Danané": ["DALEU", "DANANE", "GBON-HOUYE", "KOUAN-HOULE", "MAHAPLEU", "SEILEU", "ZONNEU"],
+      "Man": ["BOGOUINE", "FAGNAMPLEU", "GBANGBEGOUINE-YATI", "LOGOUALE", "MAN", "PODIAGOUINE", "SANDOUGOU-SOBA", "SANGOUINE", "YAPLEU", "ZAGOUE", "ZIOGOUINE"],
+      "Sipilou": ["SIPILOU", "YORODOUGOU"],
+      "Zouan-Hounien": ["BANNEU", "BIN-HOUYE", "GOULALEU", "TEAPLEU", "YELLEU", "ZOUAN-HOUNIEN"]
+    },
+    "WORODOUGOU": {
+      "Kani": ["DJIBROSSO", "FADIADOUGOU", "KANI", "MORONDO"],
+      "Séguéla": ["BOBI", "DIARABANA", "DUALLA", "KAMALO", "MASSALA", "SEGUELA", "SIFIE", "WOROFLA"]
+    },
+    "YAMOUSSOUKRO": {
+      "Attiegouakro": ["ATTIEGOUAKRO", "LOLOBO"],
+      "Yamoussoukro": ["KOSSOU", "YAMOUSSOUKRO"]
+    },
+    "DIASPORA": {
+      "Diaspora": ["AFRIQUE", "AMERIQUE", "EUROPE"]
+    }
+  };
+  
+  // Get departments for selected region
+  const getDepartments = (region: string): string[] => {
+    const normalizedRegion = region.toUpperCase();
+    return adminData[normalizedRegion] ? Object.keys(adminData[normalizedRegion]) : [];
+  };
+  
+  // Get sous-préfectures for selected region and department
+  const getSousPrefectures = (region: string, departement: string): string[] => {
+    const normalizedRegion = region.toUpperCase();
+    if (!adminData[normalizedRegion]) return [];
+    return adminData[normalizedRegion][departement] || [];
+  };
   const [formData, setFormData] = useState({
     // Circonscription de rattachement
     region: "",
@@ -529,13 +726,21 @@ const SaisieForm = () => {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="sousPrefecture">Sous-préfecture *</Label>
-                  <Input
-                    id="sousPrefecture"
-                    value={formData.sousPrefecture}
-                    onChange={(e) => setFormData({ ...formData, sousPrefecture: e.target.value })}
-                    placeholder="Entrer la sous-préfecture"
+                  <Select 
+                    value={formData.sousPrefecture} 
+                    onValueChange={(value) => setFormData({ ...formData, sousPrefecture: value })} 
+                    disabled={!formData.departement}
                     required
-                  />
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder={!formData.departement ? "Sélectionner d'abord un département" : "Sélectionner une sous-préfecture"} />
+                    </SelectTrigger>
+                    <SelectContent className="bg-background z-50 max-h-[300px]">
+                      {formData.departement && getSousPrefectures(formData.region, formData.departement).map((sp) => (
+                        <SelectItem key={sp} value={sp}>{sp}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="village">Village *</Label>
