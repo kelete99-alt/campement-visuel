@@ -6,7 +6,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsive
 import { useCampements } from "@/hooks/useCampements";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useState, useMemo } from "react";
-import DynamicCampementMap from "@/components/DynamicCampementMap";
+// import DynamicCampementMap from "@/components/DynamicCampementMap";
 
 const Dashboard = () => {
   const { campements, stats: campmentsStats, isLoading } = useCampements();
@@ -248,7 +248,9 @@ const Dashboard = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <DynamicCampementMap campements={filteredCampements} />
+                <div className="h-[500px] w-full rounded-lg overflow-hidden border border-border shadow-sm flex items-center justify-center bg-muted">
+                  <p className="text-muted-foreground">Carte temporairement désactivée</p>
+                </div>
               </CardContent>
             </Card>
           </div>
