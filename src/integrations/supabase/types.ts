@@ -28,6 +28,8 @@ export type Database = {
           electricite: boolean | null
           electricite_connectivite: string | null
           id: string
+          lieux_culte: string[] | null
+          lieux_culte_autre: string | null
           nom_campement: string
           nombre_menages: number | null
           observations: string | null
@@ -56,6 +58,8 @@ export type Database = {
           electricite?: boolean | null
           electricite_connectivite?: string | null
           id?: string
+          lieux_culte?: string[] | null
+          lieux_culte_autre?: string | null
           nom_campement: string
           nombre_menages?: number | null
           observations?: string | null
@@ -84,6 +88,8 @@ export type Database = {
           electricite?: boolean | null
           electricite_connectivite?: string | null
           id?: string
+          lieux_culte?: string[] | null
+          lieux_culte_autre?: string | null
           nom_campement?: string
           nombre_menages?: number | null
           observations?: string | null

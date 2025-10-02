@@ -51,6 +51,7 @@ const SaisieForm = () => {
     reseauOperateur: "",
     reseauOperateurAutre: "",
     lieuxCulte: [] as string[],
+    lieuxCulteAutre: "",
     eauPotable: false,
     nombrePompes: "",
     
@@ -129,7 +130,8 @@ const SaisieForm = () => {
           reseauType: data.reseau_type || "",
           reseauOperateur: data.reseau_operateur || "",
           reseauOperateurAutre: data.reseau_operateur_autre || "",
-          lieuxCulte: [],
+          lieuxCulte: data.lieux_culte || [],
+          lieuxCulteAutre: data.lieux_culte_autre || "",
           eauPotable: data.eau_potable || false,
           nombrePompes: "",
           equipementsSportifs: false,
@@ -198,6 +200,8 @@ const SaisieForm = () => {
         reseau_type: formData.reseauType || null,
         reseau_operateur: formData.reseauOperateur || null,
         reseau_operateur_autre: formData.reseauOperateurAutre || null,
+        lieux_culte: formData.lieuxCulte.length > 0 ? formData.lieuxCulte : null,
+        lieux_culte_autre: formData.lieuxCulteAutre || null,
         route_acces: formData.natureVoie,
         avis_prefet: formData.avisPrefet,
         avis_sous_prefet: formData.avisSousPrefet,
@@ -632,6 +636,82 @@ const SaisieForm = () => {
                       </div>
                     )}
                   </div>
+                  
+                  {/* Lieux de culte */}
+                  <div className="space-y-2">
+                    <Label className="font-semibold">5. Lieux de culte</Label>
+                    <div className="ml-6 space-y-3">
+                      <div className="flex items-center space-x-2">
+                        <Checkbox
+                          id="culte-chretien"
+                          checked={formData.lieuxCulte.includes("chretien")}
+                          onCheckedChange={(checked) => {
+                            if (checked) {
+                              setFormData({ ...formData, lieuxCulte: [...formData.lieuxCulte, "chretien"] });
+                            } else {
+                              setFormData({ ...formData, lieuxCulte: formData.lieuxCulte.filter(c => c !== "chretien") });
+                            }
+                          }}
+                        />
+                        <Label htmlFor="culte-chretien" className="cursor-pointer">Chrétien</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Checkbox
+                          id="culte-musulman"
+                          checked={formData.lieuxCulte.includes("musulman")}
+                          onCheckedChange={(checked) => {
+                            if (checked) {
+                              setFormData({ ...formData, lieuxCulte: [...formData.lieuxCulte, "musulman"] });
+                            } else {
+                              setFormData({ ...formData, lieuxCulte: formData.lieuxCulte.filter(c => c !== "musulman") });
+                            }
+                          }}
+                        />
+                        <Label htmlFor="culte-musulman" className="cursor-pointer">Musulman</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Checkbox
+                          id="culte-traditionnel"
+                          checked={formData.lieuxCulte.includes("traditionnel")}
+                          onCheckedChange={(checked) => {
+                            if (checked) {
+                              setFormData({ ...formData, lieuxCulte: [...formData.lieuxCulte, "traditionnel"] });
+                            } else {
+                              setFormData({ ...formData, lieuxCulte: formData.lieuxCulte.filter(c => c !== "traditionnel") });
+                            }
+                          }}
+                        />
+                        <Label htmlFor="culte-traditionnel" className="cursor-pointer">Traditionnel</Label>
+                      </div>
+                      <div className="space-y-2">
+                        <div className="flex items-center space-x-2">
+                          <Checkbox
+                            id="culte-autre"
+                            checked={formData.lieuxCulte.includes("autre")}
+                            onCheckedChange={(checked) => {
+                              if (checked) {
+                                setFormData({ ...formData, lieuxCulte: [...formData.lieuxCulte, "autre"] });
+                              } else {
+                                setFormData({ ...formData, lieuxCulte: formData.lieuxCulte.filter(c => c !== "autre"), lieuxCulteAutre: "" });
+                              }
+                            }}
+                          />
+                          <Label htmlFor="culte-autre" className="cursor-pointer">Autre</Label>
+                        </div>
+                        {formData.lieuxCulte.includes("autre") && (
+                          <div className="ml-6">
+                            <Input
+                              id="lieuxCulteAutre"
+                              value={formData.lieuxCulteAutre}
+                              onChange={(e) => setFormData({ ...formData, lieuxCulteAutre: e.target.value })}
+                              placeholder="Préciser"
+                            />
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  
                   <div className="flex items-center space-x-2">
                     <Checkbox
                       id="eauPotable"
