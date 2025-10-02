@@ -1,14 +1,34 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { FileText, Home, Activity, LogOut, List } from "lucide-react";
+import { FileText, Home, Activity, LogOut, List, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useEffect, useState } from "react";
 import logoDgat from "@/assets/logo-dgat.jpg";
 import armoiries from "@/assets/armoiries-ci.png";
 
 const Navbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    const checkAdminStatus = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data: roleData } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", user.id)
+        .eq("role", "admin")
+        .single();
+
+      setIsAdmin(!!roleData);
+    };
+
+    checkAdminStatus();
+  }, []);
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -87,6 +107,19 @@ const Navbar = () => {
               <Activity size={18} />
               <span className="hidden sm:inline">Activités</span>
             </Link>
+            {isAdmin && (
+              <Link
+                to="/admin"
+                className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
+                  isActive("/admin")
+                    ? "bg-primary text-primary-foreground"
+                    : "text-foreground hover:bg-muted"
+                }`}
+              >
+                <Shield size={18} />
+                <span className="hidden sm:inline">Admin</span>
+              </Link>
+            )}
             <Button
               variant="ghost"
               size="sm"

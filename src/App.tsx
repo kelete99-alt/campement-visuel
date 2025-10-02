@@ -8,6 +8,7 @@ import ActivityLog from "./pages/ActivityLog";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import ListeCampements from "./pages/ListeCampements";
+import Admin from "./pages/Admin";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 const queryClient = new QueryClient();
@@ -56,6 +57,14 @@ const App = () => (
           element={
             <ProtectedRoute>
               <ActivityLog />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute>
+              <Admin />
             </ProtectedRoute>
           }
         />
