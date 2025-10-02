@@ -3,58 +3,58 @@ import Navbar from "@/components/Navbar";
 import StatsCard from "@/components/StatsCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
+import { useCampements } from "@/hooks/useCampements";
 
 const Dashboard = () => {
-  // Données d'exemple - à remplacer par des données réelles du backend
-  const stats = [
+  const { campements, stats: campmentsStats, isLoading } = useCampements();
+
+  const statsCards = [
     {
       title: "Campements enregistrés",
-      value: 247,
+      value: campmentsStats.totalCampements,
       icon: MapPin,
-      trend: "+12 ce mois-ci",
+      trend: `${campmentsStats.totalCampements} au total`,
       iconColor: "text-primary",
     },
     {
       title: "Population totale",
-      value: "52,340",
+      value: campmentsStats.totalPopulation.toLocaleString(),
       icon: Users,
-      trend: "RGPH 2014",
+      trend: "Recensés",
       iconColor: "text-secondary",
     },
     {
-      title: "Nationalités",
-      value: 15,
+      title: "Régions",
+      value: Object.keys(campmentsStats.campmentsParRegion).length,
       icon: Globe2,
-      trend: "Nationalités dominantes",
+      trend: "Couvertes",
       iconColor: "text-accent",
     },
     {
       title: "Départements",
-      value: 31,
+      value: Object.keys(campmentsStats.campmentsParDepartement).length,
       icon: Building2,
-      trend: "Répartition nationale",
+      trend: "Couverts",
       iconColor: "text-primary",
     },
   ];
 
-  const recentActivity = [
-    { id: 1, action: "Nouveau campement ajouté", location: "Aboisso", time: "Il y a 2 heures" },
-    { id: 2, action: "Mise à jour infrastructure", location: "Bondoukou", time: "Il y a 5 heures" },
-    { id: 3, action: "Validation préfectorale", location: "Daloa", time: "Il y a 1 jour" },
-  ];
+  // Activités récentes basées sur les derniers campements
+  const recentActivity = campements.slice(0, 3).map((c) => ({
+    id: c.id,
+    action: "Campement enregistré",
+    location: `${c.nom_campement} - ${c.departement}`,
+    time: new Date(c.created_at).toLocaleDateString("fr-FR"),
+  }));
 
-  const departementData = [
-    { departement: "Abidjan", campements: 45 },
-    { departement: "Bouaké", campements: 32 },
-    { departement: "Daloa", campements: 28 },
-    { departement: "Korhogo", campements: 25 },
-    { departement: "San-Pédro", campements: 22 },
-    { departement: "Man", campements: 18 },
-    { departement: "Bondoukou", campements: 15 },
-    { departement: "Abengourou", campements: 14 },
-    { departement: "Divo", campements: 12 },
-    { departement: "Gagnoa", campements: 11 },
-  ];
+  // Données pour le graphique - top 10 départements
+  const departementData = Object.entries(campmentsStats.campmentsParDepartement)
+    .sort(([, a], [, b]) => b - a)
+    .slice(0, 10)
+    .map(([departement, count]) => ({
+      departement,
+      campements: count,
+    }));
 
   return (
     <div className="min-h-screen bg-background">
@@ -72,11 +72,17 @@ const Dashboard = () => {
         </div>
 
         {/* Statistiques */}
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-8">
-          {stats.map((stat, index) => (
-            <StatsCard key={index} {...stat} />
-          ))}
-        </div>
+        {isLoading ? (
+          <div className="text-center py-8 text-muted-foreground">
+            Chargement des statistiques...
+          </div>
+        ) : (
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-8">
+            {statsCards.map((stat, index) => (
+              <StatsCard key={index} {...stat} />
+            ))}
+          </div>
+        )}
 
         {/* Carte et activités récentes */}
         <div className="grid gap-6 lg:grid-cols-3 mb-8">

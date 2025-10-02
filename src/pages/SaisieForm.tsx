@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,6 +16,7 @@ import { supabase } from "@/integrations/supabase/client";
 const SaisieForm = () => {
   const navigate = useNavigate();
   const { id } = useParams();
+  const queryClient = useQueryClient();
   const [loading, setLoading] = useState(false);
 
   // Structure: Region -> Département -> [Sous-préfectures]
@@ -432,6 +434,9 @@ const SaisieForm = () => {
         if (error) throw error;
         toast.success("Campement enregistré avec succès !");
       }
+
+      // Invalider le cache pour synchroniser les données
+      queryClient.invalidateQueries({ queryKey: ["campements"] });
 
       setTimeout(() => navigate("/campements"), 1500);
     } catch (error) {

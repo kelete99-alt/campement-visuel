@@ -5,10 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
 import { Download, FileText, Pencil, Plus, Search, Trash2 } from "lucide-react";
 import * as XLSX from "xlsx";
+import { toast } from "sonner";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -19,29 +18,14 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-
-interface Campement {
-  id: string;
-  nom_campement: string;
-  region: string;
-  departement: string;
-  sous_prefecture: string;
-  village_rattachement: string;
-  population: number;
-  created_at: string;
-}
+import { useCampements } from "@/hooks/useCampements";
 
 const ListeCampements = () => {
   const navigate = useNavigate();
-  const [campements, setCampements] = useState<Campement[]>([]);
-  const [filteredCampements, setFilteredCampements] = useState<Campement[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { campements, isLoading, deleteCampement } = useCampements();
+  const [filteredCampements, setFilteredCampements] = useState(campements);
   const [searchTerm, setSearchTerm] = useState("");
   const [deleteId, setDeleteId] = useState<string | null>(null);
-
-  useEffect(() => {
-    fetchCampements();
-  }, []);
 
   useEffect(() => {
     const filtered = campements.filter(
@@ -53,43 +37,10 @@ const ListeCampements = () => {
     setFilteredCampements(filtered);
   }, [searchTerm, campements]);
 
-  const fetchCampements = async () => {
-    try {
-      const { data, error } = await supabase
-        .from("campements")
-        .select("*")
-        .order("created_at", { ascending: false });
-
-      if (error) throw error;
-      setCampements(data || []);
-      setFilteredCampements(data || []);
-    } catch (error) {
-      console.error("Erreur lors du chargement:", error);
-      toast.error("Erreur lors du chargement des campements");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleDelete = async () => {
+  const handleDelete = () => {
     if (!deleteId) return;
-
-    try {
-      const { error } = await supabase
-        .from("campements")
-        .delete()
-        .eq("id", deleteId);
-
-      if (error) throw error;
-
-      toast.success("Campement supprimé avec succès");
-      fetchCampements();
-    } catch (error) {
-      console.error("Erreur lors de la suppression:", error);
-      toast.error("Erreur lors de la suppression");
-    } finally {
-      setDeleteId(null);
-    }
+    deleteCampement(deleteId);
+    setDeleteId(null);
   };
 
   const handleExportExcel = () => {
@@ -177,7 +128,7 @@ const ListeCampements = () => {
               </div>
             </div>
 
-            {loading ? (
+            {isLoading ? (
               <div className="text-center py-8 text-muted-foreground">
                 Chargement...
               </div>
