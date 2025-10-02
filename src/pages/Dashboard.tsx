@@ -104,20 +104,42 @@ const Dashboard = () => {
     time: new Date(c.created_at).toLocaleDateString("fr-FR"),
   }));
 
-  // Données pour le graphique - top 10 départements des campements filtrés
-  const departementData = useMemo(() => {
+  // Données pour le graphique - adapté selon les filtres
+  const chartData = useMemo(() => {
     const counts: Record<string, number> = {};
+    
+    // Si un département est sélectionné, afficher les sous-préfectures
+    if (selectedDepartement !== "all") {
+      filteredCampements.forEach(c => {
+        counts[c.sous_prefecture] = (counts[c.sous_prefecture] || 0) + 1;
+      });
+      return {
+        data: Object.entries(counts)
+          .sort(([, a], [, b]) => b - a)
+          .slice(0, 10)
+          .map(([name, count]) => ({
+            name,
+            campements: count,
+          })),
+        label: "Sous-préfecture"
+      };
+    }
+    
+    // Sinon, afficher les départements
     filteredCampements.forEach(c => {
       counts[c.departement] = (counts[c.departement] || 0) + 1;
     });
-    return Object.entries(counts)
-      .sort(([, a], [, b]) => b - a)
-      .slice(0, 10)
-      .map(([departement, count]) => ({
-        departement,
-        campements: count,
-      }));
-  }, [filteredCampements]);
+    return {
+      data: Object.entries(counts)
+        .sort(([, a], [, b]) => b - a)
+        .slice(0, 10)
+        .map(([name, count]) => ({
+          name,
+          campements: count,
+        })),
+      label: "Département"
+    };
+  }, [filteredCampements, selectedDepartement]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -258,17 +280,19 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Répartition par département */}
+        {/* Répartition dynamique */}
         <Card>
           <CardHeader>
-            <CardTitle>Répartition par département</CardTitle>
+            <CardTitle>
+              Répartition par {selectedDepartement !== "all" ? "sous-préfecture" : "département"}
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={departementData}>
+              <BarChart data={chartData.data}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis 
-                  dataKey="departement" 
+                  dataKey="name" 
                   angle={-45}
                   textAnchor="end"
                   height={100}
