@@ -54,23 +54,29 @@ const Admin = () => {
       
       setIsLoading(true);
       try {
-        // Récupérer les profils
+        // Récupérer les profils (les admins peuvent voir tous les profils via RLS)
         const { data: profiles, error: profilesError } = await supabase
           .from("profiles")
           .select("*")
           .order("created_at", { ascending: false });
 
-        if (profilesError) throw profilesError;
+        if (profilesError) {
+          console.error("Erreur profils:", profilesError);
+          throw profilesError;
+        }
 
-        // Récupérer les rôles
+        // Récupérer tous les rôles (les admins peuvent voir tous les rôles)
         const { data: roles, error: rolesError } = await supabase
           .from("user_roles")
-          .select("user_id, role");
+          .select("user_id, role")
+          .order("created_at", { ascending: false });
 
-        if (rolesError) throw rolesError;
+        if (rolesError) {
+          console.error("Erreur rôles:", rolesError);
+          throw rolesError;
+        }
 
-        // Récupérer les emails depuis auth.users via une fonction edge ou RPC
-        // Pour l'instant, on combine les données disponibles
+        // Combiner les profils avec leurs rôles
         const usersWithRoles = profiles?.map(profile => {
           const userRole = roles?.find(r => r.user_id === profile.id);
           return {
