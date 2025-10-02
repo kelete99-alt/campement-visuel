@@ -43,93 +43,103 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-border bg-card shadow-sm">
-      <div className="container mx-auto px-4">
-        <div className="flex h-20 items-center justify-between">
-          {/* Logo et titre */}
-          <div className="flex items-center gap-4">
-            <img src={armoiries} alt="Armoiries de Côte d'Ivoire" className="h-14 w-14 object-contain" />
-            <div className="hidden md:block h-12 w-px bg-border" />
-            <img src={logoDgat} alt="Logo DGAT" className="h-12 w-12 object-contain" />
-            <div className="hidden lg:block">
-              <h1 className="text-lg font-bold text-foreground leading-tight">
+    <nav className="sticky top-0 z-50 border-b border-border shadow-lg bg-gradient-to-r from-primary/10 via-secondary/10 to-primary/10">
+      <div className="container mx-auto px-4 py-3">
+        {/* En-tête avec logos et titre */}
+        <div className="flex items-center justify-between mb-3 lg:mb-0">
+          <div className="flex items-center gap-3">
+            <img src={armoiries} alt="Armoiries de Côte d'Ivoire" className="h-12 w-12 md:h-14 md:w-14 object-contain" />
+            <div className="hidden md:block h-10 w-px bg-border/50" />
+            <img src={logoDgat} alt="Logo DGAT" className="h-10 w-10 md:h-12 md:w-12 object-contain" />
+            <div className="hidden sm:block">
+              <h1 className="text-sm md:text-base lg:text-lg font-bold text-foreground leading-tight">
                 Direction Générale de l'Administration du Territoire
               </h1>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-xs md:text-sm text-muted-foreground">
                 Érection de Campements en Villages
               </p>
             </div>
           </div>
 
-          {/* Navigation */}
-          <div className="flex items-center gap-2">
+          {/* Bouton déconnexion visible sur mobile */}
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleLogout}
+            className="lg:hidden flex items-center gap-2 hover:bg-destructive/10 hover:text-destructive"
+          >
+            <LogOut size={18} />
+          </Button>
+        </div>
+
+        {/* Navigation - séparée sur une ligne en dessous sur mobile */}
+        <div className="flex items-center gap-2 flex-wrap justify-center lg:justify-end">
+          <Link
+            to="/"
+            className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+              isActive("/")
+                ? "bg-primary text-primary-foreground shadow-md"
+                : "text-foreground hover:bg-card/80"
+            }`}
+          >
+            <Home size={18} />
+            <span className="hidden sm:inline">Tableau de bord</span>
+          </Link>
+          <Link
+            to="/saisie"
+            className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+              isActive("/saisie")
+                ? "bg-primary text-primary-foreground shadow-md"
+                : "text-foreground hover:bg-card/80"
+            }`}
+          >
+            <FileText size={18} />
+            <span className="hidden sm:inline">Nouvelle fiche</span>
+          </Link>
+          <Link
+            to="/campements"
+            className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+              isActive("/campements")
+                ? "bg-primary text-primary-foreground shadow-md"
+                : "text-foreground hover:bg-card/80"
+            }`}
+          >
+            <List size={18} />
+            <span className="hidden sm:inline">Liste</span>
+          </Link>
+          <Link
+            to="/activites"
+            className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+              isActive("/activites")
+                ? "bg-primary text-primary-foreground shadow-md"
+                : "text-foreground hover:bg-card/80"
+            }`}
+          >
+            <Activity size={18} />
+            <span className="hidden sm:inline">Activités</span>
+          </Link>
+          {isAdmin && (
             <Link
-              to="/"
-              className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
-                isActive("/")
-                  ? "bg-primary text-primary-foreground"
-                  : "text-foreground hover:bg-muted"
+              to="/admin"
+              className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+                isActive("/admin")
+                  ? "bg-primary text-primary-foreground shadow-md"
+                  : "text-foreground hover:bg-card/80"
               }`}
             >
-              <Home size={18} />
-              <span className="hidden sm:inline">Tableau de bord</span>
+              <Shield size={18} />
+              <span className="hidden sm:inline">Admin</span>
             </Link>
-            <Link
-              to="/saisie"
-              className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
-                isActive("/saisie")
-                  ? "bg-primary text-primary-foreground"
-                  : "text-foreground hover:bg-muted"
-              }`}
-            >
-              <FileText size={18} />
-              <span className="hidden sm:inline">Nouvelle fiche</span>
-            </Link>
-            <Link
-              to="/campements"
-              className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
-                isActive("/campements")
-                  ? "bg-primary text-primary-foreground"
-                  : "text-foreground hover:bg-muted"
-              }`}
-            >
-              <List size={18} />
-              <span className="hidden sm:inline">Liste</span>
-            </Link>
-            <Link
-              to="/activites"
-              className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
-                isActive("/activites")
-                  ? "bg-primary text-primary-foreground"
-                  : "text-foreground hover:bg-muted"
-              }`}
-            >
-              <Activity size={18} />
-              <span className="hidden sm:inline">Activités</span>
-            </Link>
-            {isAdmin && (
-              <Link
-                to="/admin"
-                className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
-                  isActive("/admin")
-                    ? "bg-primary text-primary-foreground"
-                    : "text-foreground hover:bg-muted"
-                }`}
-              >
-                <Shield size={18} />
-                <span className="hidden sm:inline">Admin</span>
-              </Link>
-            )}
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleLogout}
-              className="flex items-center gap-2"
-            >
-              <LogOut size={18} />
-              <span className="hidden sm:inline">Déconnexion</span>
-            </Button>
-          </div>
+          )}
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleLogout}
+            className="hidden lg:flex items-center gap-2 hover:bg-destructive/10 hover:text-destructive"
+          >
+            <LogOut size={18} />
+            <span>Déconnexion</span>
+          </Button>
         </div>
       </div>
     </nav>
