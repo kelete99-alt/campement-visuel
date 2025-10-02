@@ -26,12 +26,17 @@ export type Database = {
           eau_potable: boolean | null
           ecole: boolean | null
           electricite: boolean | null
+          electricite_connectivite: string | null
           id: string
           nom_campement: string
           nombre_menages: number | null
           observations: string | null
           population: number | null
           region: string
+          reseau_operateur: string | null
+          reseau_operateur_autre: string | null
+          reseau_telephone: boolean | null
+          reseau_type: string | null
           route_acces: string | null
           sous_prefecture: string
           updated_at: string | null
@@ -49,12 +54,17 @@ export type Database = {
           eau_potable?: boolean | null
           ecole?: boolean | null
           electricite?: boolean | null
+          electricite_connectivite?: string | null
           id?: string
           nom_campement: string
           nombre_menages?: number | null
           observations?: string | null
           population?: number | null
           region: string
+          reseau_operateur?: string | null
+          reseau_operateur_autre?: string | null
+          reseau_telephone?: boolean | null
+          reseau_type?: string | null
           route_acces?: string | null
           sous_prefecture: string
           updated_at?: string | null
@@ -72,12 +82,17 @@ export type Database = {
           eau_potable?: boolean | null
           ecole?: boolean | null
           electricite?: boolean | null
+          electricite_connectivite?: string | null
           id?: string
           nom_campement?: string
           nombre_menages?: number | null
           observations?: string | null
           population?: number | null
           region?: string
+          reseau_operateur?: string | null
+          reseau_operateur_autre?: string | null
+          reseau_telephone?: boolean | null
+          reseau_type?: string | null
           route_acces?: string | null
           sous_prefecture?: string
           updated_at?: string | null

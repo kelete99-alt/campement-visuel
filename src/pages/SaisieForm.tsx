@@ -49,6 +49,7 @@ const SaisieForm = () => {
     reseauTelephone: false,
     reseauType: "",
     reseauOperateur: "",
+    reseauOperateurAutre: "",
     lieuxCulte: [] as string[],
     eauPotable: false,
     nombrePompes: "",
@@ -124,9 +125,10 @@ const SaisieForm = () => {
           depotPharmacie: false,
           electricite: data.electricite || false,
           electriciteConnectivite: data.electricite_connectivite || "",
-          reseauTelephone: false,
-          reseauType: "",
-          reseauOperateur: "",
+          reseauTelephone: data.reseau_telephone || false,
+          reseauType: data.reseau_type || "",
+          reseauOperateur: data.reseau_operateur || "",
+          reseauOperateurAutre: data.reseau_operateur_autre || "",
           lieuxCulte: [],
           eauPotable: data.eau_potable || false,
           nombrePompes: "",
@@ -191,6 +193,11 @@ const SaisieForm = () => {
         centre_sante: !!formData.santeType,
         eau_potable: formData.eauPotable,
         electricite: formData.electricite,
+        electricite_connectivite: formData.electriciteConnectivite || null,
+        reseau_telephone: formData.reseauTelephone,
+        reseau_type: formData.reseauType || null,
+        reseau_operateur: formData.reseauOperateur || null,
+        reseau_operateur_autre: formData.reseauOperateurAutre || null,
         route_acces: formData.natureVoie,
         avis_prefet: formData.avisPrefet,
         avis_sous_prefet: formData.avisSousPrefet,
@@ -564,15 +571,66 @@ const SaisieForm = () => {
                       </div>
                     )}
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id="reseauTelephone"
-                      checked={formData.reseauTelephone}
-                      onCheckedChange={(checked) => setFormData({ ...formData, reseauTelephone: checked as boolean })}
-                    />
-                    <Label htmlFor="reseauTelephone" className="cursor-pointer">
-                      Accès réseau téléphonique
-                    </Label>
+                  <div className="space-y-2">
+                    <div className="flex items-center space-x-2">
+                      <Checkbox
+                        id="reseauTelephone"
+                        checked={formData.reseauTelephone}
+                        onCheckedChange={(checked) => setFormData({ ...formData, reseauTelephone: checked as boolean })}
+                      />
+                      <Label htmlFor="reseauTelephone" className="cursor-pointer">
+                        Accès réseau téléphonique
+                      </Label>
+                    </div>
+                    {formData.reseauTelephone && (
+                      <div className="ml-6 space-y-3">
+                        <div className="space-y-2">
+                          <Label htmlFor="reseauType">Type de réseau</Label>
+                          <Select 
+                            value={formData.reseauType} 
+                            onValueChange={(value) => setFormData({ ...formData, reseauType: value })}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Sélectionner" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="fixe">Fixe</SelectItem>
+                              <SelectItem value="mobile">Mobile</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        {formData.reseauType === "mobile" && (
+                          <div className="space-y-2">
+                            <Label htmlFor="reseauOperateur">Opérateur mobile</Label>
+                            <Select 
+                              value={formData.reseauOperateur} 
+                              onValueChange={(value) => setFormData({ ...formData, reseauOperateur: value })}
+                            >
+                              <SelectTrigger>
+                                <SelectValue placeholder="Sélectionner" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="orange">Orange</SelectItem>
+                                <SelectItem value="mtn">MTN</SelectItem>
+                                <SelectItem value="moov">Moov</SelectItem>
+                                <SelectItem value="autre">Autre</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        )}
+                        {formData.reseauType === "mobile" && formData.reseauOperateur === "autre" && (
+                          <div className="space-y-2">
+                            <Label htmlFor="reseauOperateurAutre">Préciser l'opérateur</Label>
+                            <Input
+                              id="reseauOperateurAutre"
+                              value={formData.reseauOperateurAutre}
+                              onChange={(e) => setFormData({ ...formData, reseauOperateurAutre: e.target.value })}
+                              placeholder="Nom de l'opérateur"
+                            />
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
                   <div className="flex items-center space-x-2">
                     <Checkbox
