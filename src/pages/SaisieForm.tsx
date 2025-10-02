@@ -278,23 +278,257 @@ const SaisieForm = () => {
               <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                 <div className="space-y-2">
                   <Label htmlFor="region">Région *</Label>
-                  <Input
-                    id="region"
-                    value={formData.region}
-                    onChange={(e) => setFormData({ ...formData, region: e.target.value })}
-                    placeholder="Ex: Lagunes"
-                    required
-                  />
+                  <Select value={formData.region} onValueChange={(value) => setFormData({ ...formData, region: value, departement: "", sousPrefecture: "" })} required>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Sélectionner une région" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-background z-50">
+                      <SelectItem value="Abidjan">Abidjan</SelectItem>
+                      <SelectItem value="Agnéby-Tiassa">Agnéby-Tiassa</SelectItem>
+                      <SelectItem value="Bafing">Bafing</SelectItem>
+                      <SelectItem value="Bagoué">Bagoué</SelectItem>
+                      <SelectItem value="Béré">Béré</SelectItem>
+                      <SelectItem value="Bounkani">Bounkani</SelectItem>
+                      <SelectItem value="Cavally">Cavally</SelectItem>
+                      <SelectItem value="Folon">Folon</SelectItem>
+                      <SelectItem value="Gbêkê">Gbêkê</SelectItem>
+                      <SelectItem value="Gbokle">Gbokle</SelectItem>
+                      <SelectItem value="Gôh">Gôh</SelectItem>
+                      <SelectItem value="Gontougo">Gontougo</SelectItem>
+                      <SelectItem value="Grands-Ponts">Grands-Ponts</SelectItem>
+                      <SelectItem value="Guémon">Guémon</SelectItem>
+                      <SelectItem value="Hambol">Hambol</SelectItem>
+                      <SelectItem value="Haut-Sassandra">Haut-Sassandra</SelectItem>
+                      <SelectItem value="Iffou">Iffou</SelectItem>
+                      <SelectItem value="Indénié-Djuablin">Indénié-Djuablin</SelectItem>
+                      <SelectItem value="Kabadougou">Kabadougou</SelectItem>
+                      <SelectItem value="La Mé">La Mé</SelectItem>
+                      <SelectItem value="Lôh-Djiboua">Lôh-Djiboua</SelectItem>
+                      <SelectItem value="Marahoué">Marahoué</SelectItem>
+                      <SelectItem value="Moronou">Moronou</SelectItem>
+                      <SelectItem value="Nawa">Nawa</SelectItem>
+                      <SelectItem value="N'Zi">N'Zi</SelectItem>
+                      <SelectItem value="Poro">Poro</SelectItem>
+                      <SelectItem value="San-Pédro">San-Pédro</SelectItem>
+                      <SelectItem value="Sud-Comoé">Sud-Comoé</SelectItem>
+                      <SelectItem value="Tchologo">Tchologo</SelectItem>
+                      <SelectItem value="Tonkpi">Tonkpi</SelectItem>
+                      <SelectItem value="Worodougou">Worodougou</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="departement">Département *</Label>
-                  <Input
-                    id="departement"
-                    value={formData.departement}
-                    onChange={(e) => setFormData({ ...formData, departement: e.target.value })}
-                    placeholder="Ex: Abidjan"
-                    required
-                  />
+                  <Select value={formData.departement} onValueChange={(value) => setFormData({ ...formData, departement: value, sousPrefecture: "" })} required>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Sélectionner un département" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-background z-50 max-h-[300px]">
+                      {formData.region === "Abidjan" && (
+                        <>
+                          <SelectItem value="Abidjan">Abidjan</SelectItem>
+                        </>
+                      )}
+                      {formData.region === "Agnéby-Tiassa" && (
+                        <>
+                          <SelectItem value="Agboville">Agboville</SelectItem>
+                          <SelectItem value="Tiassalé">Tiassalé</SelectItem>
+                        </>
+                      )}
+                      {formData.region === "Bafing" && (
+                        <>
+                          <SelectItem value="Touba">Touba</SelectItem>
+                        </>
+                      )}
+                      {formData.region === "Bagoué" && (
+                        <>
+                          <SelectItem value="Boundiali">Boundiali</SelectItem>
+                          <SelectItem value="Tengréla">Tengréla</SelectItem>
+                        </>
+                      )}
+                      {formData.region === "Béré" && (
+                        <>
+                          <SelectItem value="Mankono">Mankono</SelectItem>
+                        </>
+                      )}
+                      {formData.region === "Bounkani" && (
+                        <>
+                          <SelectItem value="Bouna">Bouna</SelectItem>
+                          <SelectItem value="Doropo">Doropo</SelectItem>
+                          <SelectItem value="Tehini">Tehini</SelectItem>
+                        </>
+                      )}
+                      {formData.region === "Cavally" && (
+                        <>
+                          <SelectItem value="Guiglo">Guiglo</SelectItem>
+                          <SelectItem value="Taï">Taï</SelectItem>
+                          <SelectItem value="Toulepleu">Toulepleu</SelectItem>
+                        </>
+                      )}
+                      {formData.region === "Folon" && (
+                        <>
+                          <SelectItem value="Minignan">Minignan</SelectItem>
+                        </>
+                      )}
+                      {formData.region === "Gbêkê" && (
+                        <>
+                          <SelectItem value="Bouaké">Bouaké</SelectItem>
+                          <SelectItem value="Béoumi">Béoumi</SelectItem>
+                          <SelectItem value="Botro">Botro</SelectItem>
+                        </>
+                      )}
+                      {formData.region === "Gbokle" && (
+                        <>
+                          <SelectItem value="Sassandra">Sassandra</SelectItem>
+                        </>
+                      )}
+                      {formData.region === "Gôh" && (
+                        <>
+                          <SelectItem value="Gagnoa">Gagnoa</SelectItem>
+                          <SelectItem value="Oumé">Oumé</SelectItem>
+                        </>
+                      )}
+                      {formData.region === "Gontougo" && (
+                        <>
+                          <SelectItem value="Bondoukou">Bondoukou</SelectItem>
+                          <SelectItem value="Koun-Fao">Koun-Fao</SelectItem>
+                          <SelectItem value="Sandégué">Sandégué</SelectItem>
+                          <SelectItem value="Tanda">Tanda</SelectItem>
+                          <SelectItem value="Transua">Transua</SelectItem>
+                        </>
+                      )}
+                      {formData.region === "Grands-Ponts" && (
+                        <>
+                          <SelectItem value="Dabou">Dabou</SelectItem>
+                          <SelectItem value="Jacqueville">Jacqueville</SelectItem>
+                        </>
+                      )}
+                      {formData.region === "Guémon" && (
+                        <>
+                          <SelectItem value="Bangolo">Bangolo</SelectItem>
+                          <SelectItem value="Duékoué">Duékoué</SelectItem>
+                        </>
+                      )}
+                      {formData.region === "Hambol" && (
+                        <>
+                          <SelectItem value="Dabakala">Dabakala</SelectItem>
+                          <SelectItem value="Katiola">Katiola</SelectItem>
+                          <SelectItem value="Niakaramandougou">Niakaramandougou</SelectItem>
+                        </>
+                      )}
+                      {formData.region === "Haut-Sassandra" && (
+                        <>
+                          <SelectItem value="Daloa">Daloa</SelectItem>
+                          <SelectItem value="Issia">Issia</SelectItem>
+                          <SelectItem value="Vavoua">Vavoua</SelectItem>
+                          <SelectItem value="Zoukougbeu">Zoukougbeu</SelectItem>
+                        </>
+                      )}
+                      {formData.region === "Iffou" && (
+                        <>
+                          <SelectItem value="Daoukro">Daoukro</SelectItem>
+                          <SelectItem value="M'Bahiakro">M'Bahiakro</SelectItem>
+                        </>
+                      )}
+                      {formData.region === "Indénié-Djuablin" && (
+                        <>
+                          <SelectItem value="Abengourou">Abengourou</SelectItem>
+                          <SelectItem value="Agnibilékrou">Agnibilékrou</SelectItem>
+                          <SelectItem value="Bettié">Bettié</SelectItem>
+                        </>
+                      )}
+                      {formData.region === "Kabadougou" && (
+                        <>
+                          <SelectItem value="Odienné">Odienné</SelectItem>
+                        </>
+                      )}
+                      {formData.region === "La Mé" && (
+                        <>
+                          <SelectItem value="Adzopé">Adzopé</SelectItem>
+                          <SelectItem value="Akoupé">Akoupé</SelectItem>
+                          <SelectItem value="Alépé">Alépé</SelectItem>
+                        </>
+                      )}
+                      {formData.region === "Lôh-Djiboua" && (
+                        <>
+                          <SelectItem value="Divo">Divo</SelectItem>
+                          <SelectItem value="Guitry">Guitry</SelectItem>
+                          <SelectItem value="Lakota">Lakota</SelectItem>
+                        </>
+                      )}
+                      {formData.region === "Marahoué" && (
+                        <>
+                          <SelectItem value="Bouaflé">Bouaflé</SelectItem>
+                          <SelectItem value="Sinfra">Sinfra</SelectItem>
+                          <SelectItem value="Zuenoula">Zuenoula</SelectItem>
+                        </>
+                      )}
+                      {formData.region === "Moronou" && (
+                        <>
+                          <SelectItem value="Bongouanou">Bongouanou</SelectItem>
+                          <SelectItem value="M'Batto">M'Batto</SelectItem>
+                        </>
+                      )}
+                      {formData.region === "Nawa" && (
+                        <>
+                          <SelectItem value="Guéyo">Guéyo</SelectItem>
+                          <SelectItem value="Soubré">Soubré</SelectItem>
+                        </>
+                      )}
+                      {formData.region === "N'Zi" && (
+                        <>
+                          <SelectItem value="Bocanda">Bocanda</SelectItem>
+                          <SelectItem value="Dimbokro">Dimbokro</SelectItem>
+                        </>
+                      )}
+                      {formData.region === "Poro" && (
+                        <>
+                          <SelectItem value="Korhogo">Korhogo</SelectItem>
+                          <SelectItem value="M'Bengué">M'Bengué</SelectItem>
+                          <SelectItem value="Sinématiali">Sinématiali</SelectItem>
+                        </>
+                      )}
+                      {formData.region === "San-Pédro" && (
+                        <>
+                          <SelectItem value="San-Pédro">San-Pédro</SelectItem>
+                          <SelectItem value="Tabou">Tabou</SelectItem>
+                        </>
+                      )}
+                      {formData.region === "Sud-Comoé" && (
+                        <>
+                          <SelectItem value="Aboisso">Aboisso</SelectItem>
+                          <SelectItem value="Adiaké">Adiaké</SelectItem>
+                          <SelectItem value="Grand-Bassam">Grand-Bassam</SelectItem>
+                          <SelectItem value="Tiapoum">Tiapoum</SelectItem>
+                        </>
+                      )}
+                      {formData.region === "Tchologo" && (
+                        <>
+                          <SelectItem value="Ferkessédougou">Ferkessédougou</SelectItem>
+                          <SelectItem value="Kong">Kong</SelectItem>
+                          <SelectItem value="Ouangolodougou">Ouangolodougou</SelectItem>
+                        </>
+                      )}
+                      {formData.region === "Tonkpi" && (
+                        <>
+                          <SelectItem value="Biankouma">Biankouma</SelectItem>
+                          <SelectItem value="Danané">Danané</SelectItem>
+                          <SelectItem value="Man">Man</SelectItem>
+                          <SelectItem value="Sipilou">Sipilou</SelectItem>
+                          <SelectItem value="Zouan-Hounien">Zouan-Hounien</SelectItem>
+                        </>
+                      )}
+                      {formData.region === "Worodougou" && (
+                        <>
+                          <SelectItem value="Kani">Kani</SelectItem>
+                          <SelectItem value="Séguéla">Séguéla</SelectItem>
+                        </>
+                      )}
+                      {!formData.region && (
+                        <SelectItem value="" disabled>Sélectionner d'abord une région</SelectItem>
+                      )}
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="sousPrefecture">Sous-préfecture *</Label>
@@ -302,7 +536,7 @@ const SaisieForm = () => {
                     id="sousPrefecture"
                     value={formData.sousPrefecture}
                     onChange={(e) => setFormData({ ...formData, sousPrefecture: e.target.value })}
-                    placeholder="Ex: Cocody"
+                    placeholder="Entrer la sous-préfecture"
                     required
                   />
                 </div>
